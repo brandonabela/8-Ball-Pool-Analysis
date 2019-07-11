@@ -1,5 +1,4 @@
 # 8 Ball Pool Bot
------------------
 
 This is an Open Source project that opens an instance of Miniclip's **8 ball pool**  and starts playing through the use of an AI.
 
