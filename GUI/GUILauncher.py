@@ -2,7 +2,6 @@ import sys
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import (QWidget, QMessageBox)
-from PyQt5.QtCore import QCoreApplication
 
 from Config.EightBallLookup import EightBallLookup
 from Logic.MiniclipHandling import MiniclipHandling
@@ -32,7 +31,7 @@ class GUILauncher:
 
     def interaction(self, isEnabled):
         self.window.playGamebutton.setEnabled(isEnabled)
-
+        
         if self.miniclipHandling.isGameOpen(self.eightBallLookup):
             self.window.openGameButton.setEnabled(False)
         else:
@@ -46,7 +45,7 @@ class GUILauncher:
     def openGameButton(self):
         self.interaction(False)
 
-        if self.miniclipHandling.isGameOpen(self.eightBallLookup):
+        if not self.miniclipHandling.isGameOpen(self.eightBallLookup):
             self.miniclipHandling.openGame(self.eightBallLookup)
             self.showPopUp(self.eightBallLookup.monitorOneText)
 

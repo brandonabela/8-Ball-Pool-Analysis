@@ -4,13 +4,13 @@ import pyautogui  # Image detection on screen
 
 class MiniclipHandling:
     def isGameOpen(self, lookup):
-        return pyautogui.locateOnScreen(lookup.urlPath, confidence=.6) is None            
+        return pyautogui.locateOnScreen(lookup.urlPath, confidence=.6) is not None            
     
     def openGame(self, lookup):
         webbrowser.get(lookup.chromePath).open_new(lookup.url)
     
     def isUserLoggedIn(self, lookup):
-        return pyautogui.locateOnScreen(lookup.signUpLogin, confidence=.6) is None
+        return pyautogui.locateOnScreen(lookup.signUpLogin, confidence=.6) is not None
 
     def logInUser(self, lookup, email, password):
         signUpLoginCoordinate = pyautogui.locateOnScreen(lookup.signUpLogin, confidence=.6)
