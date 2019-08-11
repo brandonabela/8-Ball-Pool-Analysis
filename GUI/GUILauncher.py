@@ -22,7 +22,7 @@ class GUILauncher:
         self.window.move(yPosition, 0)
 
         self.window.openGameButton.clicked.connect(self.openGameButton)
-        self.window.logInButton.clicked.connect(self.logInButton)
+        self.window.logInButton.clicked.connect(self.logInWindow)
         self.window.playGamebutton.clicked.connect(self.playGameButton)
 
         self.interaction(True)
@@ -52,7 +52,7 @@ class GUILauncher:
 
         self.interaction(True)
     
-    def logInButton(self):
+    def logInWindow(self):
         self.interaction(False)
 
         if not self.miniclipHandling.isUserLoggedIn(self.eightBallLookup):
