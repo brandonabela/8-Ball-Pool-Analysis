@@ -1,8 +1,7 @@
-from GUI.GUILauncher import GUILauncher
+'''Start Module'''
 
-def main():
-    guiLauncher = GUILauncher()
-    guiLauncher.createMainWindow()
+from GUI.gui_launcher import GUILauncher
 
 if __name__ == '__main__':
-    main()
+    GUI_LAUNCHER = GUILauncher()
+    GUI_LAUNCHER.create_main_window()

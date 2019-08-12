@@ -11,3 +11,9 @@ Future ideas:
 - Implement object detection.
 - Figure out the game's velocities and 'drag' values.
 - Include some form of search to find the most optimal hit.
+
+Installing Packages:
+- conda install -c conda-forge opencv
+- pip3 install pylint
+- pip3 install pyautogui
+- pip3 install PyQt5
