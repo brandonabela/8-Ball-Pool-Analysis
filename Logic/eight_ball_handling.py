@@ -13,14 +13,14 @@ class EightBallHandling:
     def is_game_loaded(self):
         '''Responsible for checking if game loaded successfully'''
 
-        return pyautogui.locateOnScreen(self.lookup.menu_button, confidence=.6) is not None
+        return pyautogui.locateOnScreen(self.lookup.menu_button, confidence=self.lookup.low_confidence) is not None
 
     def access_menu(self):
         '''Responsible for attempting to access the game main menu'''
 
         while True:
-            back_coordinate = pyautogui.locateOnScreen(self.lookup.back_button, confidence=.8)
-            close_coordinate = pyautogui.locateOnScreen(self.lookup.close_button, confidence=.8)
+            back_coordinate = pyautogui.locateOnScreen(self.lookup.back_button, confidence=self.lookup.high_confidence)
+            close_coordinate = pyautogui.locateOnScreen(self.lookup.close_button, confidence=self.lookup.high_confidence)
 
             if close_coordinate is not None:
                 pyautogui.click(close_coordinate)
@@ -31,4 +31,4 @@ class EightBallHandling:
             else:
                 break
 
-        return pyautogui.locateOnScreen(self.lookup.menu_button, confidence=.6) is not None
+        return pyautogui.locateOnScreen(self.lookup.menu_button, confidence=self.lookup.low_confidence) is not None

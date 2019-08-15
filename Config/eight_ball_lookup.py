@@ -3,9 +3,12 @@
 class EightBallLookup:
     '''Eight Ball Lookup is  is responsible for handling application settings'''
 
-    # Base Path
+    # Base Configurations
 
     base_path = 'Config\\Images\\'
+
+    low_confidence = 0.5
+    high_confidence = 0.7
 
     # URL Look Ups
 

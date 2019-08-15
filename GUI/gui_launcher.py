@@ -1,7 +1,7 @@
 '''GUI Launcher Module'''
 
-import asyncio
 import sys
+import asyncio
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QMessageBox, QWidget
