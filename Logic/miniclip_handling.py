@@ -37,7 +37,7 @@ class MiniclipHandling:
 
             time.sleep(1) # Wait for the pop up to completely show
 
-            while pyautogui.locateOnScreen(self.lookup.log_in_loading, confidence=self.lookup.low_confidence) is not None:
+            while pyautogui.locateOnScreen(self.lookup.sign_in, confidence=self.lookup.low_confidence) is None:
                 time.sleep(1)
 
             email_coordinate = pyautogui.locateOnScreen(self.lookup.email, confidence=self.lookup.low_confidence)

@@ -20,7 +20,6 @@ class EightBallLookup:
     url_path = base_path + 'Url.PNG'
 
     sign_up_login = base_path + 'SignUpLogin.PNG'
-    log_in_loading = base_path + 'LogInLoading.PNG'
     email = base_path + 'Email.PNG'
     password = base_path + 'Password.PNG'
     sign_in = base_path + 'SignIn.PNG'
