@@ -28,6 +28,14 @@ class EightBallLookup:
     close_button = base_path + 'CloseButton.PNG'
     menu_button = base_path + 'MenuButton.PNG'
 
+    marker = base_path + 'Marker.PNG'
+
+    # Output Path
+
+    training_path = 'Training\\'
+    hole_training_path = 'Parameters\\Holes\\'
+    ball_training_path = 'Parameters\\Balls\\'
+
     # Pop Up Text
 
     monitor_one_text = 'Make sure the web browser is opened on monitor one'

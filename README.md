@@ -8,7 +8,7 @@ Features:
 - [x] Open 8 ball pool in focus mode.
 - [x] Check if the user is logged in.
 - [x] GUI app that lets the user open Miniclip, Log In and play the Game.
-- [x] Implement object detection.
+- [x] Implement game item detection.
 - [ ] Implement object classification.
 - [ ] Figure out the game's velocities and 'drag' values.
 - [ ] Include some form of search to find the most optimal hit.
@@ -18,4 +18,5 @@ Installing Packages using conda:
 - conda install -c conda-forge opencv
 - conda install -c anaconda pyqt
 - conda install -c conda-forge pyautogui
+- conda install -c conda-forge scikit-image
 - conda install -c anaconda pylint
