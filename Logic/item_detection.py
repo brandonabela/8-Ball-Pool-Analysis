@@ -43,7 +43,7 @@ class ItemDetection:
                 rgb_image = cv2.imread(image_path)
                 gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
 
-                holes = cv2.HoughCircles(gray_image, cv2.HOUGH_GRADIENT, 1, 10, param1=param2, param2=param2, minRadius=20, maxRadius=21)
+                holes = cv2.HoughCircles(gray_image, cv2.HOUGH_GRADIENT, 1, 10, param1=param1, param2=param2, minRadius=20, maxRadius=21)
 
                 if holes is not None:
                     holes = np.round(holes[0, :]).astype("int")
