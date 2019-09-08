@@ -1,47 +1,44 @@
-'''Eight Ball Module'''
+'''Eight Ball Lookup Module'''
 
-class EightBallLookup:
-    '''Eight Ball Lookup is  is responsible for handling application settings'''
+# Base Configurations
 
-    # Base Configurations
+BASE_PATH = 'Config\\Images\\'
+BALL_PATH = BASE_PATH + 'Balls\\'
 
-    base_path = 'Config\\Images\\'
+MID_CONFIDENCE = 0.5
+HIGH_CONFIDENCE = 0.7
 
-    low_confidence = 0.5
-    high_confidence = 0.7
+# URL
 
-    # URL Look Ups
+URL = 'https://www.miniclip.com/games/8-ball-pool-multiplayer/en/focus/'
+CHROME_PATH = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s --incognito'
 
-    url = 'https://www.miniclip.com/games/8-ball-pool-multiplayer/en/focus/'
-    chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s --incognito'
+# Mineclip Image Checking
 
-    # Mineclip Image Checking
+URL_PATH = BASE_PATH + 'Url.PNG'
 
-    url_path = base_path + 'Url.PNG'
+SIGN_UP_LOGIN = BASE_PATH + 'SignUpLogin.PNG'
+EMAIL = BASE_PATH + 'Email.PNG'
+PASSWORD = BASE_PATH + 'Password.PNG'
+SIGN_IN = BASE_PATH + 'SignIn.PNG'
 
-    sign_up_login = base_path + 'SignUpLogin.PNG'
-    email = base_path + 'Email.PNG'
-    password = base_path + 'Password.PNG'
-    sign_in = base_path + 'SignIn.PNG'
+BACK_BUTTON = BASE_PATH + 'BackButton.PNG'
+CLOSE_BUTTON = BASE_PATH + 'CloseButton.PNG'
+MENU_BUTTON = BASE_PATH + 'MenuButton.PNG'
 
-    back_button = base_path + 'BackButton.PNG'
-    close_button = base_path + 'CloseButton.PNG'
-    menu_button = base_path + 'MenuButton.PNG'
+# Output Path
 
-    marker = base_path + 'Marker.PNG'
+TRAINING_FOLDER = 'Training\\'
 
-    # Output Path
+HOLE_TRAINING_PATH = 'Parameters\\Holes\\'
+BALL_TRAINING_PATH = 'Parameters\\Balls\\'
 
-    training_path = 'Training\\'
-    hole_training_path = 'Parameters\\Holes\\'
-    ball_training_path = 'Parameters\\Balls\\'
+# Pop Up Text
 
-    # Pop Up Text
+MONITOR_ONE_TEXT = 'Make sure the web browser is opened on monitor one'
 
-    monitor_one_text = 'Make sure the web browser is opened on monitor one'
+ALREADY_LOGGED_IN = 'User has already logged in'
+SUCCESSFUL_LOGIN = 'You have successfully logged in'
+ERROR_DURING_LOGIN = 'An error was encountered during log in'
 
-    already_logged_in = 'User has already logged in'
-    successful_log_in = 'You have successfully logged in'
-    error_during_log_in = 'An error was encountered during log in'
-
-    already_opened_game = 'Game is already opened'
+ALREADY_OPENED_GAME = 'Game is already opened'
