@@ -10,8 +10,6 @@ class Bot:
     balls = []
     holes = []
 
-    initial_balls_found = False
-
     item_detection = ItemDetection()
 
     def find_holes(self, frame):
@@ -29,17 +27,20 @@ class Bot:
         '''Responsible for finding the balls'''
 
         board_positions = self.item_detection.board_boundary(self.holes)
-        board_frame = frame[board_positions[1]:board_positions[3], board_positions[0]:board_positions[2]]
 
+        board_frame = frame[board_positions[1]:board_positions[3], board_positions[0]:board_positions[2]]
         board_frame_edges = cv2.Canny(board_frame, 200, 300)
 
-        self.balls = self.item_detection.find_balls(board_frame_edges)
-        self.update_ball_positions(board_positions)
+        detected_balls = self.item_detection.find_balls(board_frame_edges)
 
-    def update_ball_positions(self, board_positions):
+        if len(detected_balls) < 18:
+            self.update_ball_positions(board_positions, detected_balls)
+
+    def update_ball_positions(self, board_positions, detected_balls):
         '''Responsible for updating the ball positions to map from board coordinates to entire frame coordinates'''
 
-        for ball in self.balls:
+        self.balls = []
+
+        for ball in detected_balls:
             if ball is not None:
-                ball[0] += board_positions[0]
-                ball[1] += board_positions[1]
+                self.balls.append((ball[0] + board_positions[0], ball[1] + board_positions[1]))

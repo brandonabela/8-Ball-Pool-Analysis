@@ -8,6 +8,8 @@ BALL_PATH = BASE_PATH + 'Balls\\'
 MID_CONFIDENCE = 0.5
 HIGH_CONFIDENCE = 0.7
 
+BALL_RADIUS = 12
+
 # URL
 
 URL = 'https://www.miniclip.com/games/8-ball-pool-multiplayer/en/focus/'

@@ -30,7 +30,7 @@ class ItemDetection:
         if holes is not None:
             holes = np.round(holes[0, :]).astype("int")
 
-            for (x_position, y_position, radius) in holes:
+            for (x_position, y_position, _) in holes:
                 detected_holes.append((x_position, y_position))
 
         return detected_holes
@@ -46,7 +46,7 @@ class ItemDetection:
         if circles is not None:
             circles = np.round(circles[0, :]).astype("int")
 
-            for (x_position, y_position, radius) in circles:
+            for (x_position, y_position, _) in circles:
                 detected_balls.append((x_position, y_position))
 
         return detected_balls

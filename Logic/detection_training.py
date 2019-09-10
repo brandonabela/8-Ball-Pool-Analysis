@@ -50,9 +50,9 @@ class DetectionTraining:
                 if holes is not None:
                     holes = np.round(holes[0, :]).astype("int")
 
-                    for (x_position, y_position, radius) in holes:
+                    for (x_position, y_position, _) in holes:
                         cv2.circle(rgb_image, (x_position, y_position), 2, (15, 10, 25), 3)
-                        cv2.circle(rgb_image, (x_position, y_position), radius, (25, 10, 255), 3)
+                        cv2.circle(rgb_image, (x_position, y_position), lookup.BALL_RADIUS, (25, 10, 255), 3)
 
                 cv2.imwrite(lookup.HOLE_TRAINING_PATH + str(param2) + '_' + str(param1) + '.jpg', rgb_image)
 
@@ -75,11 +75,9 @@ class DetectionTraining:
                 if circles is not None:
                     circles = np.round(circles[0, :]).astype("int")
 
-                    for (x_position, y_position, radius) in circles:
-                        radius = 13 # assuming ball is always 13 pixels
-
+                    for (x_position, y_position, _) in circles:
                         cv2.circle(rgb_image, (board_positions[0] + x_position, board_positions[1] + y_position), 2, (15, 10, 25), 3)
-                        cv2.circle(rgb_image, (board_positions[0] + x_position, board_positions[1] + y_position), radius, (25, 10, 255), 3)
+                        cv2.circle(rgb_image, (board_positions[0] + x_position, board_positions[1] + y_position), lookup.BALL_RADIUS, (25, 10, 255), 3)
 
                 cv2.imwrite(lookup.BALL_TRAINING_PATH + str(param2) + '_' + str(param1) + '.jpg', rgb_image)
 
@@ -98,12 +96,13 @@ class DetectionTraining:
         while cap.isOpened():
             frame_count += 1
             ret, frame = cap.read()
-            modified_frame = frame.copy()
 
             if not bot.holes:
                 bot.find_holes(frame)
 
             if ret:
+                modified_frame = frame.copy()
+
                 self.print_timestamp(frame_count)
 
                 bot.find_balls(frame)
@@ -114,7 +113,7 @@ class DetectionTraining:
 
                 for ball in bot.balls:
                     cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
-                    cv2.circle(modified_frame, (ball[0], ball[1]), 13, (255, 0, 0), 3)
+                    cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, (255, 0, 0), 3)
 
                 if save_video:
                     out.write(modified_frame)
