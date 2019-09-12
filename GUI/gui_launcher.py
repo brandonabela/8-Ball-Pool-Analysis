@@ -6,7 +6,8 @@ import asyncio
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QMessageBox, QWidget
 
-from Config.eight_ball_lookup import EightBallLookup
+import Config.eight_ball_lookup as lookup
+
 from Logic.eight_ball_handling import EightBallHandling
 from Logic.miniclip_handling import MiniclipHandling
 
@@ -16,7 +17,6 @@ class GUILauncher:
     window = {}
     login_window = {}
 
-    lookup = EightBallLookup()
     miniclipHandling = MiniclipHandling()
     eightBallHandling = EightBallHandling()
 
@@ -58,9 +58,9 @@ class GUILauncher:
 
         if not self.miniclipHandling.is_game_open():
             asyncio.run(self.miniclipHandling.open_game())
-            self.show_pop_up(self.lookup.monitor_one_text)
+            self.show_pop_up(lookup.MONITOR_ONE_TEXT)
         else:
-            self.show_pop_up(self.lookup.already_opened_game)
+            self.show_pop_up(lookup.ALREADY_OPENED_GAME)
 
         self.update_main_window_buttons()
 
@@ -86,10 +86,10 @@ class GUILauncher:
         password = self.login_window.passwordField.text()
 
         if self.miniclipHandling.log_in_user(username, password):
-            self.show_pop_up(self.lookup.successful_log_in)
+            self.show_pop_up(lookup.SUCCESSFUL_LOGIN)
             self.login_window.close
         else:
-            self.show_pop_up(self.lookup.error_during_log_in)
+            self.show_pop_up(lookup.ERROR_DURING_LOGIN)
 
         self.update_main_window_buttons()
 

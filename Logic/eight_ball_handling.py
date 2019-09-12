@@ -3,24 +3,24 @@
 import time
 import pyautogui
 
-from Config.eight_ball_lookup import EightBallLookup
+import Config.eight_ball_lookup as lookup
 
 class EightBallHandling:
     '''Responsible for handling the 8 ball game'''
 
-    lookup = EightBallLookup()
-
-    def is_game_loaded(self):
+    @staticmethod
+    def is_game_loaded():
         '''Responsible for checking if game loaded successfully'''
 
-        return pyautogui.locateOnScreen(self.lookup.menu_button, confidence=self.lookup.low_confidence) is not None
+        return pyautogui.locateOnScreen(lookup.MENU_BUTTON, confidence=lookup.MID_CONFIDENCE) is not None
 
-    def access_menu(self):
+    @staticmethod
+    def access_menu():
         '''Responsible for attempting to access the game main menu'''
 
         while True:
-            back_coordinate = pyautogui.locateOnScreen(self.lookup.back_button, confidence=self.lookup.high_confidence)
-            close_coordinate = pyautogui.locateOnScreen(self.lookup.close_button, confidence=self.lookup.high_confidence)
+            back_coordinate = pyautogui.locateOnScreen(lookup.BACK_BUTTON, confidence=lookup.HIGH_CONFIDENCE)
+            close_coordinate = pyautogui.locateOnScreen(lookup.CLOSE_BUTTON, confidence=lookup.HIGH_CONFIDENCE)
 
             if close_coordinate is not None:
                 pyautogui.click(close_coordinate)
@@ -31,4 +31,4 @@ class EightBallHandling:
             else:
                 break
 
-        return pyautogui.locateOnScreen(self.lookup.menu_button, confidence=self.lookup.low_confidence) is not None
+        return pyautogui.locateOnScreen(lookup.MENU_BUTTON, confidence=lookup.MID_CONFIDENCE) is not None
