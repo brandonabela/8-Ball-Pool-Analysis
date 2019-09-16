@@ -8,11 +8,13 @@ import Config.eight_ball_lookup as lookup
 
 from Logic.bot import Bot
 from Logic.item_detection import ItemDetection
+from Logic.item_classification import ItemClassification
 
 class DetectionTraining:
     '''Responisble for handling detection training'''
 
     item_detection = ItemDetection()
+    item_classification = ItemClassification()
 
     def identify_parameters(self, identify_for_holes, identify_for_balls):
         '''Iterating through a number of images and saving the image results based on different parameter values'''
@@ -112,8 +114,24 @@ class DetectionTraining:
                     cv2.circle(modified_frame, (hole[0], hole[1]), 20, (255, 255, 255), 3)
 
                 for ball in bot.balls:
-                    cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
-                    cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, (255, 0, 0), 3)
+                    rgb_colour = None
+                    ball_pixels = self.item_classification.get_ball_pixels(frame, ball)
+
+                    white_count = self.item_classification.get_white_count(ball_pixels)
+                    black_count = self.item_classification.get_black_count(ball_pixels)
+
+                    if self.item_classification.is_solid_ball(white_count, black_count):
+                        rgb_colour = (255, 0, 0)
+                    elif self.item_classification.is_stripped_ball(white_count, black_count):
+                        rgb_colour = (0, 255, 0)
+                    elif self.item_classification.is_black_ball(white_count, black_count):
+                        rgb_colour = (255, 255, 0)
+                    elif self.item_classification.is_white_ball(white_count):
+                        rgb_colour = (0, 255, 255)
+
+                    if rgb_colour is not None:
+                        cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
+                        cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, rgb_colour, 3)
 
                 if save_video:
                     out.write(modified_frame)

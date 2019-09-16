@@ -9,9 +9,9 @@ Features:
 - [x] Check if the user is logged in.
 - [x] GUI app that lets the user open Miniclip, Log In and play the Game.
 - [x] Implement game item detection.
-- [ ] Implement object classification.
-- [ ] Figure out the game's velocities and 'drag' values.
-- [ ] Include some form of search to find the most optimal hit.
+- [x] Implement ball classification.
+- [ ] Algorithm that finds an optimal path to score.
+- [ ] Algorithm which identifies ball speed for a given path on any cue.
 
 Installing Packages using conda:
 - conda install -c anaconda pip **(if you want to have pip as well)**
