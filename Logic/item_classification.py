@@ -40,11 +40,11 @@ class ItemClassification:
         white_count = 0
 
         for pixel in ball_pixels:
-            is_r_valid = 192 <= pixel[0] <= 255
+            is_b_valid = 192 <= pixel[0] <= 255
             is_g_valid = 192 <= pixel[1] <= 255
-            is_b_valid = 192 <= pixel[2] <= 255
+            is_r_valid = 192 <= pixel[2] <= 255
 
-            if is_r_valid and is_g_valid and is_b_valid:
+            if is_b_valid and is_g_valid and is_r_valid:
                 white_count += 1
 
         return white_count
@@ -56,11 +56,11 @@ class ItemClassification:
         black_count = 0
 
         for pixel in ball_pixels:
-            is_r_valid = 0 <= pixel[0] <= 64
+            is_b_valid = 0 <= pixel[0] <= 64
             is_g_valid = 0 <= pixel[1] <= 64
-            is_b_valid = 0 <= pixel[2] <= 64
+            is_r_valid = 0 <= pixel[2] <= 64
 
-            if is_r_valid and is_g_valid and is_b_valid:
+            if is_b_valid and is_g_valid and is_r_valid:
                 black_count += 1
 
         return black_count
@@ -72,8 +72,8 @@ class ItemClassification:
         return 7 <= white_count <= 72 and 0 <= black_count <= 41
 
     @staticmethod
-    def is_stripped_ball(white_count, black_count):
-        '''Checking whether the pixel count is a stripped ball'''
+    def is_striped_ball(white_count, black_count):
+        '''Checking whether the pixel count is a striped ball'''
 
         return 73 <= white_count <= 159 and 0 <= black_count <= 58
 

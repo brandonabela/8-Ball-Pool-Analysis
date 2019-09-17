@@ -122,7 +122,7 @@ class DetectionTraining:
 
                     if self.item_classification.is_solid_ball(white_count, black_count):
                         rgb_colour = (255, 0, 0)
-                    elif self.item_classification.is_stripped_ball(white_count, black_count):
+                    elif self.item_classification.is_striped_ball(white_count, black_count):
                         rgb_colour = (0, 255, 0)
                     elif self.item_classification.is_black_ball(white_count, black_count):
                         rgb_colour = (255, 255, 0)
