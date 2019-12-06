@@ -7,14 +7,13 @@ import cv2
 import Config.eight_ball_lookup as lookup
 
 from Logic.bot import Bot
+from Logic.ball_colour import BallColour
 from Logic.item_detection import ItemDetection
-from Logic.item_classification import ItemClassification
 
 class DetectionTraining:
     '''Responisble for handling detection training'''
 
     item_detection = ItemDetection()
-    item_classification = ItemClassification()
 
     def identify_parameters(self, identify_for_holes, identify_for_balls):
         '''Iterating through a number of images and saving the image results based on different parameter values'''
@@ -90,6 +89,7 @@ class DetectionTraining:
         frame_count = 0
 
         cap = cv2.VideoCapture(video_path)
+        cap.set(True, 0) # Start clip from a particular frame
 
         if save_video:
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -115,23 +115,24 @@ class DetectionTraining:
 
                 for ball in bot.balls:
                     rgb_colour = None
-                    ball_pixels = self.item_classification.get_ball_pixels(frame, ball)
 
-                    white_count = self.item_classification.get_white_count(ball_pixels)
-                    black_count = self.item_classification.get_black_count(ball_pixels)
-
-                    if self.item_classification.is_solid_ball(white_count, black_count):
+                    if ball[2] is BallColour.Solid:
                         rgb_colour = (255, 0, 0)
-                    elif self.item_classification.is_striped_ball(white_count, black_count):
+                    elif ball[2] is BallColour.Strip:
                         rgb_colour = (0, 255, 0)
-                    elif self.item_classification.is_black_ball(white_count, black_count):
+                    elif ball[2] is BallColour.Black:
                         rgb_colour = (255, 255, 0)
-                    elif self.item_classification.is_white_ball(white_count):
+                    elif ball[2] is BallColour.White:
                         rgb_colour = (0, 255, 255)
 
                     if rgb_colour is not None:
                         cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
                         cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, rgb_colour, 3)
+
+                optimal_path = bot.find_optimal_path()
+
+                for i, _ in enumerate(optimal_path[:-1]):
+                    cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 5)
 
                 if save_video:
                     out.write(modified_frame)
