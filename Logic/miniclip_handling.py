@@ -35,7 +35,7 @@ class MiniclipHandling:
         return self.is_element_present(self.facebook_page_locator)
 
     def open_game(self):
-        '''Opening an incognito web browser based on a url'''
+        '''Opening a selenium web browser based on a url'''
 
         self.driver.get(lookup.URL)
 
@@ -60,7 +60,7 @@ class MiniclipHandling:
         modal_email_element.send_keys(email)
 
         modal_password_element = self.driver.find_element_by_xpath(self.modal_password_locator)
-        modal_password_element.send_keys(email)
+        modal_password_element.send_keys(password)
 
         sign_in_element = self.driver.find_element_by_xpath(self.modal_sign_in_locator)
         sign_in_element.click()
