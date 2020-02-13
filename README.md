@@ -15,6 +15,7 @@ Features:
 
 Installing Packages using conda:
 - conda install -c anaconda pip **(if you want to have pip as well)**
+- conda install -c selenium
 - conda install -c conda-forge opencv
 - conda install -c anaconda pyqt
 - conda install -c conda-forge pyautogui
