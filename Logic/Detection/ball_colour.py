@@ -2,8 +2,9 @@
 
 from enum import Enum
 
+
 class BallColour(Enum):
-    '''Responisble for handling detection training'''
+    '''Responsible for handling detection training'''
 
     Solid = 1
     Strip = 2

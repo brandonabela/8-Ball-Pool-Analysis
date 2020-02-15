@@ -6,8 +6,9 @@ import numpy as np
 
 import Config.eight_ball_lookup as lookup
 
-from Logic.ball_colour import BallColour
-from Logic.dijkstra_graph import DijkstraGraph
+from Logic.Detection.ball_colour import BallColour
+from Logic.Path.dijkstra_graph import DijkstraGraph
+
 
 class BallPath:
     ''' Responsible for finding an optimal path '''

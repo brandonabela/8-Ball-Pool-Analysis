@@ -5,6 +5,7 @@ from collections import defaultdict
 import math
 import numpy as np
 
+
 class DijkstraGraph:
     '''Responisble for handling dijsktra graph'''
 

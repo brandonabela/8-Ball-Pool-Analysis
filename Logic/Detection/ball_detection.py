@@ -1,9 +1,10 @@
-'''Item Detection Module'''
+'''Ball Detection Module'''
 
 import numpy as np
 import cv2
 
-class ItemDetection:
+
+class BallDetection:
     '''Responsible for detecting game balls and holes'''
 
     @staticmethod

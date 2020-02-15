@@ -7,8 +7,9 @@ from PyQt5.QtWidgets import QMessageBox, QWidget
 
 import Config.eight_ball_lookup as lookup
 
-from Logic.eight_ball_handling import EightBallHandling
-from Logic.miniclip_handling import MiniclipHandling
+from Logic.Navigation.eight_ball_handling import EightBallHandling
+from Logic.Navigation.miniclip_handling import MiniclipHandling
+
 
 class GUILauncher:
     '''The GUI Launcher is responsible for handling the GUI of the application'''
@@ -83,7 +84,8 @@ class GUILauncher:
         else:
             self.show_pop_up("User has not logged in")
 
-    def show_pop_up(self, message):
+    @staticmethod
+    def show_pop_up(message):
         '''Opens a dialog box'''
 
         alert = QMessageBox()

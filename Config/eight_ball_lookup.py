@@ -14,9 +14,8 @@ BALL_DIAMETER = BALL_RADIUS * 2.2
 # URL
 
 URL = 'https://www.miniclip.com/games/8-ball-pool-multiplayer/en/focus/'
-CHROME_PATH = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s --incognito'
 
-# Mineclip Image Checking
+# Miniclip Image Checking
 
 MODAL_WAIT = 30
 
@@ -26,7 +25,7 @@ MENU_BUTTON = BASE_PATH + 'MenuButton.PNG'
 
 # Output Path
 
-TRAINING_FOLDER = 'Training\\'
+TRAINING_FOLDER = 'Testing\\Examples\\'
 
 HOLE_TRAINING_PATH = 'Parameters\\Holes\\'
 BALL_TRAINING_PATH = 'Parameters\\Balls\\'
