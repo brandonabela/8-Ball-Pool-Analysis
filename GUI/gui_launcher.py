@@ -1,7 +1,6 @@
 '''GUI Launcher Module'''
 
 import sys
-import asyncio
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QMessageBox, QWidget
@@ -34,35 +33,17 @@ class GUILauncher:
         self.window.logInButton.clicked.connect(self.create_log_in_window)
         self.window.playGamebutton.clicked.connect(self.play_game_button)
 
-        self.update_main_window_buttons()
-
         self.window.show()
         sys.exit(app.exec_())
-
-    def update_main_window_buttons(self):
-        '''Handles which main window buttons are enabled'''
-
-        self.window.openGameButton.setEnabled(False)
-        self.window.logInButton.setEnabled(False)
-        self.window.playGamebutton.setEnabled(False)
-
-        if not self.miniclipHandling.is_game_open():
-            self.window.openGameButton.setEnabled(True)
-        elif not self.miniclipHandling.is_logged_in():
-            self.window.logInButton.setEnabled(True)
-        elif not self.eightBallHandling.is_game_loaded():
-            self.window.playGamebutton.setEnabled(True)
 
     def open_game_button(self):
         '''Responsible for opening the game'''
 
         if not self.miniclipHandling.is_game_open():
-            asyncio.run(self.miniclipHandling.open_game())
+            self.miniclipHandling.open_game()
             self.show_pop_up(lookup.MONITOR_ONE_TEXT)
         else:
             self.show_pop_up(lookup.ALREADY_OPENED_GAME)
-
-        self.update_main_window_buttons()
 
     def create_log_in_window(self):
         '''Responsible for loading the log in window'''
@@ -75,9 +56,7 @@ class GUILauncher:
 
             self.login_window.show()
         else:
-            self.show_pop_up(self.login_window.already_opened_game)
-
-        self.update_main_window_buttons()
+            self.show_pop_up(lookup.ALREADY_OPENED_GAME)
 
     def log_in_button(self):
         '''Responsible for handling the logging in miniclip'''
@@ -91,8 +70,6 @@ class GUILauncher:
         else:
             self.show_pop_up(lookup.ERROR_DURING_LOGIN)
 
-        self.update_main_window_buttons()
-
     def play_game_button(self):
         '''Handling the access game'''
 
@@ -105,8 +82,6 @@ class GUILauncher:
                 self.show_pop_up("Game is not in main menu but with a successful log in")
         else:
             self.show_pop_up("User has not logged in")
-
-        self.update_main_window_buttons()
 
     def show_pop_up(self, message):
         '''Opens a dialog box'''

@@ -12,11 +12,12 @@ Features:
 - [x] Implement ball classification.
 - [x] Algorithm that finds an optimal path to score.
 - [ ] Find cue angle for the found optimal path.
-- [ ] Algorithm which identifies ball speed for a given path on any cue.
+- [ ] Calculate ball speed for a given path on any cue.
 - [ ] Algorithm for game loop.
 
 Installing Packages using conda:
 - conda install -c anaconda pip
+- conda install -c selenium
 - conda install -c conda-forge opencv
 - conda install -c anaconda pyqt
 - conda install -c conda-forge pyautogui

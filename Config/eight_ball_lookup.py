@@ -18,12 +18,7 @@ CHROME_PATH = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s --
 
 # Mineclip Image Checking
 
-URL_PATH = BASE_PATH + 'Url.PNG'
-
-SIGN_UP_LOGIN = BASE_PATH + 'SignUpLogin.PNG'
-EMAIL = BASE_PATH + 'Email.PNG'
-PASSWORD = BASE_PATH + 'Password.PNG'
-SIGN_IN = BASE_PATH + 'SignIn.PNG'
+MODAL_WAIT = 30
 
 BACK_BUTTON = BASE_PATH + 'BackButton.PNG'
 CLOSE_BUTTON = BASE_PATH + 'CloseButton.PNG'
