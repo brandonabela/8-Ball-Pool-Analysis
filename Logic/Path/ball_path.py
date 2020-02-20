@@ -138,7 +138,7 @@ class BallPath:
         return ball_colour_indices
     
     def get_target_holes(self):
-        '''Responsible for finding the target holes'''
+        '''Finding the target holes whiic are used to score a ball'''
 
         target_holes = []
 

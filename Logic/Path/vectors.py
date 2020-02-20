@@ -16,7 +16,7 @@ class Vectors:
     
     @staticmethod
     def move_from_two_points(point_one, point_two, distance):
-        '''Responsible for moving a given distance between two points'''
+        '''Moving a particular distance along a line standarding from point one'''
 
         point_a = np.array([point_one[0], point_one[1]])
         point_b = np.array([point_two[0], point_two[1]])
