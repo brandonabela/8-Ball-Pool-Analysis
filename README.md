@@ -10,11 +10,13 @@ Features:
 - [x] GUI app that lets the user open Miniclip, Log In and play the Game.
 - [x] Implement game item detection.
 - [x] Implement ball classification.
-- [ ] Algorithm that finds an optimal path to score.
-- [ ] Algorithm which identifies ball speed for a given path on any cue.
+- [x] Algorithm that finds an optimal path to score.
+- [ ] Find cue angle for the found optimal path.
+- [ ] Calculate ball speed for a given path on any cue.
+- [ ] Algorithm for game loop.
 
 Installing Packages using conda:
-- conda install -c anaconda pip **(if you want to have pip as well)**
+- conda install -c anaconda pip
 - conda install -c selenium
 - conda install -c conda-forge opencv
 - conda install -c anaconda pyqt
