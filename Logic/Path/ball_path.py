@@ -6,210 +6,189 @@ import numpy as np
 
 import Config.eight_ball_lookup as lookup
 
+from Logic.Path.vectors import Vectors
 from Logic.Detection.ball_colour import BallColour
 from Logic.Path.dijkstra_graph import DijkstraGraph
 
 
 class BallPath:
-    ''' Responsible for finding an optimal path '''
+    ''' Responsible for finding an optimal path using dijkstra algorithm '''
 
-    min_angle = 40
-    max_angle = 300
+    vectors = Vectors()
 
-    def find_path(self, balls, holes, ball_colour, hit_number):
-        '''Responsible for calculating an optimal path for a number of hits'''
+    def __init__(self, balls, holes, ball_colour):
+        self.graph = DijkstraGraph()
 
-        white_index = self.get_balls_index(balls, BallColour.White)
-        target_indexes = self.get_balls_index(balls, ball_colour)
+        self.ball_colour = ball_colour
+        self.white_index = self.get_balls_index(balls, BallColour.White)
+        self.target_indices = [target_index for target_index in self.get_balls_index(balls, ball_colour)]
 
-        if (balls and holes and white_index and target_indexes and not white_index in target_indexes):
-            graph = DijkstraGraph()
+        self.balls = balls
 
-            self.add_graph_edges(graph, balls, holes, ball_colour, hit_number)
+        if self.white_index:
+            self.white = balls[self.white_index]
+        
+        self.sorted_holes = sorted(holes, key=lambda tup: (-tup[1], tup[0]))
+        self.sorted_holes[3::] = sorted(self.sorted_holes[3::], key=lambda tup: (-tup[0], tup[1]))
 
-            return graph.find_any_goal_path(white_index, range(len(balls), len(balls) + len(holes)))
+        self.target_holes = self.get_target_holes()
+        self.all_objects = self.balls + self.target_holes
+        
+        self.shrink_borders = self.get_shrink_borders()
 
-        return []
+    def find_path(self):
+        '''Responsible for calculating an optimal path for one hit'''
 
-    def find_valid_hit(self, balls, holes, ball_colour):
-        '''Responsible for finding an optimal path while considering the walls'''
+        if (self.white_index and self.target_indices):
+            self.add_graph_edges()
 
-        sorted_holes = sorted(holes, key=lambda tup: (-tup[1], tup[0]))
-        sorted_holes[2::] = sorted_holes[3::-1]
-
-        all_objects = balls + sorted_holes
-
-        white_index = self.get_balls_index(balls, BallColour.White)
-        target_indexes = self.get_balls_index(balls, ball_colour)
-
-        if (balls and holes and white_index and target_indexes and not white_index in target_indexes):
-            for i, _ in enumerate(sorted_holes[:-1]):
-                for target_index in target_indexes:
-                    side_point = self.find_side_position(sorted_holes[i], sorted_holes[i + 1], all_objects[white_index], all_objects[target_index])
-
-                    if side_point is not None:
-                        is_start_valid = self.is_path_ocluded(all_objects[white_index], side_point, [white_index], all_objects)
-                        is_end_valid = self.is_path_ocluded(side_point, all_objects[target_index], [target_index], all_objects)
-
-                        if is_start_valid and is_end_valid:
-                            angle = self.angle_between_three_points(all_objects[white_index], side_point, all_objects[target_index])
-
-                            if self.min_angle < angle < self.max_angle:
-                                return [white_index, side_point, target_index]
-
-            graph = DijkstraGraph()
-            self.add_graph_edges(graph, balls, sorted_holes, ball_colour, 1)
-            return graph.find_any_goal_path(white_index, target_indexes)
+            return self.graph.find_any_goal_path(self.white, self.target_holes)
 
         return []
+    
+    def add_graph_edges(self):
+        for target_hole_index, target_hole in enumerate(self.target_holes):
+            for target_index in self.target_indices:
+                target_ball_position = self.balls[target_index]
+                target_hit_position = self.get_target_hit_position(target_index, target_hole_index)
 
-    def find_side_position(self, hole_current, hole_next, start_ball, end_ball):
-        '''Responsible for finding a mid point for a board side'''
+                if target_hit_position is not None:
+                    if self.is_path_valid(self.white, target_hit_position, [self.white_index, target_index]):
+                        if self.is_possible_shot(self.white, target_ball_position, target_hole):                            
+                            distance = self.vectors.distance_from_two_points(self.white, target_hit_position)
+                            self.graph.add_edge(self.white, target_hit_position, distance)
 
-        side_point = None
+                            self.graph.add_edge(target_hit_position, target_ball_position, 0)
 
-        is_x_axis_line = hole_current[0] == hole_next[0]
-        is_y_axis_line = hole_current[1] == hole_next[1]
+                            distance = self.vectors.distance_from_two_points(target_ball_position, target_hole)
+                            self.graph.add_edge(target_ball_position, target_hole, distance)
+    
+    def get_target_hit_position(self, ball_index, hole_index):
+        '''Responsible for calculating the target hit position'''
 
-        mid_point = self.mid_point_from_two_points(start_ball, end_ball)
+        ball = self.balls[ball_index]
+        hole = self.target_holes[hole_index]
 
-        if is_x_axis_line:
-            side_point = (hole_current[0], int(mid_point[1]))
+        line = self.vectors.line_from_two_points(ball, hole)
 
-        if is_y_axis_line:
-            side_point = (int(mid_point[0]), hole_current[1])
+        for i, a_ball in enumerate(self.balls):
+            # Line defines the path between two balls it is assumed to be blocked if
+            # the distance less than two ball radii
 
-        return side_point
+            is_intercepted = self.vectors.line_intercept_circle(line, a_ball, lookup.BALL_DIAMETER)
 
-    def add_graph_edges(self, graph, balls, holes, ball_colour, hit_number):
-        '''Responsible for adding the valid paths to the graph'''
+            if i is not ball_index and is_intercepted:
+                return None
 
-        all_objects = balls + holes
+        for i, _ in enumerate(self.sorted_holes):
+            border_start = self.shrink_borders[((2 * i) + 1) % len(self.shrink_borders)]
+            border_finish = self.shrink_borders[((2 * i) + 2) % len(self.shrink_borders)]
 
-        white_index = self.get_balls_index(balls, BallColour.White)
-        target_indexes = self.get_balls_index(balls, ball_colour)
+            if self.vectors.segment_intercept_from_four_points(ball, hole, border_start, border_finish):
+                return None
 
-        possible_paths = list(itertools.combinations(target_indexes, hit_number))
+        target_position = self.vectors.move_from_two_points(ball, hole, lookup.BALL_RADIUS * 2)
 
-        for entire_path in possible_paths:
-            is_path_valid = False
+        if target_position is None:
+            return None
 
-            for i, a_ball in enumerate(entire_path):
-                if i == 0:
-                    is_path_valid = self.add_valid_edge(graph, None, white_index, a_ball, all_objects)
-                else:
-                    is_path_valid = self.add_valid_edge(graph, entire_path[i - 2], entire_path[i - 1], a_ball, all_objects)
+        return target_position
+    
+    def is_path_valid(self, white_position, target_hit_position, exclude_indices):
+        line = self.vectors.line_from_two_points(white_position, target_hit_position)
 
-                if not is_path_valid:
-                    break
+        for i, a_ball in enumerate(self.balls):
+            # Line defines the path between two balls it is assumed to be blocked if
+            # the distance less than two ball radii
 
-            if is_path_valid:
-                for hole_index, _ in enumerate(holes):
-                    if len(entire_path) == 1:
-                        self.add_valid_edge(graph, white_index, entire_path[-1], (len(balls) + hole_index), all_objects)
-                    else:
-                        self.add_valid_edge(graph, entire_path[-2], entire_path[-1], (len(balls) + hole_index), all_objects)
+            is_intercepted = self.vectors.line_intercept_circle(line, a_ball, int(lookup.BALL_DIAMETER))
 
-    def add_valid_edge(self, graph, previous_index, start_index, end_index, all_objects):
-        '''Adding an edge if there is nothing intercepting that path'''
-
-        is_valid = self.is_path_ocluded(all_objects[start_index], all_objects[end_index], [start_index, end_index], all_objects)
-
-        if is_valid:
-            angle_weight = 0
-
-            if previous_index is not None:
-                angle = self.angle_between_three_points(all_objects[previous_index], all_objects[start_index], all_objects[end_index])
-
-                if angle < self.min_angle or angle > self.max_angle:
-                    return False
-
-                if angle < 180:
-                    angle_weight = (180 - angle) * 1000
-                else:
-                    angle_weight = (angle - 180) * 1000
-
-            distance = self.distance_from_two_points(all_objects[start_index], all_objects[end_index])
-            graph.add_edge(start_index, end_index, angle_weight + distance)
-
-        return is_valid
-
-    def is_path_ocluded(self, start_position, end_position, path_indexes, all_objects):
-        '''Determine if path is ocluded by other balls'''
-
-        line = self.line_equation_from_two_points(start_position, end_position)
-
-        for ball_index, a_ball in enumerate(all_objects):
-            if (ball_index not in path_indexes and len(a_ball) == 3):
-                if not self.line_intercept_circle(line, a_ball, lookup.BALL_DIAMETER):
-                    return False
-
+            if i not in exclude_indices and is_intercepted:
+                return False
+        
         return True
+    
+    @staticmethod
+    def is_possible_shot(white, target_ball, target_hole):
+        lower_target_ball = (target_ball[0] - lookup.BALL_DIAMETER, target_ball[1] - lookup.BALL_DIAMETER)
+        upper_target_ball = (target_ball[0] - lookup.BALL_DIAMETER, target_ball[1] - lookup.BALL_DIAMETER)
+
+        lower_target_hole = (target_hole[0] - lookup.BALL_DIAMETER, target_hole[1] - lookup.BALL_DIAMETER)
+        upper_target_hole = (target_hole[0] - lookup.BALL_DIAMETER, target_hole[1] - lookup.BALL_DIAMETER)
+
+        not_valid_x = lower_target_ball[0] < white[0] < upper_target_hole[0] or lower_target_hole[0] < white[0] < upper_target_ball[0]
+        not_valid_y = lower_target_ball[1] < white[1] < upper_target_hole[1] or lower_target_hole[1] < white[1] < upper_target_ball[1]
+
+        return not (not_valid_x or not_valid_y)
 
     @staticmethod
     def get_balls_index(balls, ball_colour):
         '''Find balls which have a particular colour'''
 
-        ball_colour_indexes = []
+        ball_colour_indices = []
 
         for i, _ in enumerate(balls):
             if balls[i][2] is ball_colour:
-                ball_colour_indexes.append(i)
+                ball_colour_indices.append(i)
 
         if (ball_colour is BallColour.White or ball_colour is BallColour.Black):
-            if ball_colour_indexes:
-                return ball_colour_indexes[0]
+            if ball_colour_indices:
+                return ball_colour_indices[0]
 
-        return ball_colour_indexes
+        return ball_colour_indices
+    
+    def get_target_holes(self):
+        '''Responsible for finding the target holes'''
 
-    @staticmethod
-    def mid_point_from_two_points(point_one, point_two):
-        '''Calculates the mid point between two points'''
+        target_holes = []
 
-        return ((point_one[0] + point_two[0]) / 2, (point_one[1] + point_two[1]) / 2)
+        start_angle = 3 * math.pi / 16
+        finish_angle = 5 * math.pi / 16
+        
+        frequency = 5
+        angle_step = np.linspace(start_angle, finish_angle, frequency, True)
 
-    @staticmethod
-    def distance_from_two_points(point_one, point_two):
-        '''Calculates the distances between two points'''
+        for i, angle in enumerate(angle_step):
+            minor_cos_angle = int(lookup.MIDDLE_HOLE_RADIUS * math.cos(angle + (math.pi / 4)))
+            minor_sin_angle = int(lookup.MIDDLE_HOLE_RADIUS * math.sin(angle + (math.pi / 4)))
 
-        return math.sqrt(((point_one[0] - point_two[0]) ** 2) + ((point_one[1] - point_two[1]) ** 2))
+            major_cos_angle = int(lookup.CORNER_HOLE_RADIUS * math.cos(angle))
+            major_sin_angle = int(lookup.CORNER_HOLE_RADIUS * math.sin(angle))
 
-    @staticmethod
-    def angle_between_three_points(point_one, point_two, point_three):
-        '''Calculate the angle between three points'''
+            target_holes.append((self.sorted_holes[0][0] + major_cos_angle, self.sorted_holes[0][1] - major_sin_angle))
+            target_holes.append((self.sorted_holes[2][0] - major_cos_angle, self.sorted_holes[2][1] - major_sin_angle))
+            target_holes.append((self.sorted_holes[3][0] - major_cos_angle, self.sorted_holes[3][1] + major_sin_angle))
+            target_holes.append((self.sorted_holes[5][0] + major_cos_angle, self.sorted_holes[5][1] + major_sin_angle))
+            
+            target_holes.append((self.sorted_holes[1][0] - minor_cos_angle, self.sorted_holes[1][1] - minor_sin_angle))
+            target_holes.append((self.sorted_holes[4][0] + minor_cos_angle, self.sorted_holes[4][1] + minor_sin_angle))
 
-        point_a = np.array([point_one[0], point_one[1]])
-        point_b = np.array([point_two[0], point_two[1]])
-        point_c = np.array([point_three[0], point_three[1]])
+        return target_holes
 
-        vector_ba = point_a - point_b
-        vector_bc = point_c - point_b
+    def get_shrink_borders(self):
+        '''Responsible for shrinking the game border'''
 
-        cosine_angle = np.dot(vector_ba, vector_bc) / (np.linalg.norm(vector_ba) * np.linalg.norm(vector_bc))
+        minor_scale = lookup.MIDDLE_BORDER_RADIUS
+        major_scale = lookup.CORNER_BORDER_RADIUS
 
-        return np.degrees(np.arccos(np.minimum(1, cosine_angle)))
+        middle_scale = int(minor_scale * 2)
 
-    @staticmethod
-    def line_equation_from_two_points(point_one, point_two):
-        '''Returns line terms from two points'''
+        hole_00 = (self.sorted_holes[0][0] + minor_scale, self.sorted_holes[0][1] - major_scale)
+        hole_01 = (self.sorted_holes[0][0] + major_scale, self.sorted_holes[0][1] - minor_scale)
 
-        l_a = point_one[1] - point_two[1]
-        l_b = point_two[0] - point_one[0]
-        l_c = (point_two[1] * point_one[0]) - (point_one[1] * point_two[0])
+        hole_10 = (self.sorted_holes[1][0] - middle_scale, self.sorted_holes[1][1] - minor_scale)
+        hole_11 = (self.sorted_holes[1][0] + middle_scale, self.sorted_holes[1][1] - minor_scale)
 
-        return (l_a, l_b, l_c)
+        hole_20 = (self.sorted_holes[2][0] - major_scale, self.sorted_holes[2][1] - minor_scale)
+        hole_21 = (self.sorted_holes[2][0] - minor_scale, self.sorted_holes[2][1] - major_scale)
 
-    @staticmethod
-    def line_intercept_circle(line_terms, circle_point, circle_radius):
-        '''Checks if a line intercepts a circle'''
+        hole_30 = (self.sorted_holes[3][0] - minor_scale, self.sorted_holes[3][1] + major_scale)
+        hole_31 = (self.sorted_holes[3][0] - major_scale, self.sorted_holes[3][1] + minor_scale)
 
-        l_a = line_terms[0]
-        l_b = line_terms[1]
-        l_c = line_terms[2]
+        hole_40 = (self.sorted_holes[4][0] + middle_scale, self.sorted_holes[4][1] + minor_scale)
+        hole_41 = (self.sorted_holes[4][0] - middle_scale, self.sorted_holes[4][1] + minor_scale)
 
-        c_x = circle_point[0]
-        c_y = circle_point[1]
+        hole_50 = (self.sorted_holes[5][0] + major_scale, self.sorted_holes[5][1] + minor_scale)
+        hole_51 = (self.sorted_holes[5][0] + minor_scale, self.sorted_holes[5][1] + major_scale)
 
-        distance = abs(l_a * c_x + l_b * c_y + l_c) / math.sqrt(l_a * l_a + l_b * l_b)
-
-        return distance >= circle_radius
+        return [hole_00, hole_01, hole_10, hole_11, hole_20, hole_21, hole_30, hole_31, hole_40, hole_41, hole_50, hole_51]

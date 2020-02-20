@@ -16,7 +16,6 @@ class Bot:
 
     target_ball_colour = BallColour.Solid
 
-    ball_path = BallPath()
     ball_detection = BallDetection()
     ball_classification = BallClassification()
 
@@ -86,25 +85,10 @@ class Bot:
     def find_optimal_path(self):
         '''Responsible for initiating the find optimal path method'''
 
-        hit_number = 1
         optimal_path = []
-
         all_objects = self.balls + self.holes
-        found_valid_path = False
 
-        while (not found_valid_path and hit_number != 3):
-            optimal_path = self.ball_path.find_path(self.balls, self.holes, self.target_ball_colour, hit_number)
-
-            if len(optimal_path) > 2:
-                found_valid_path = True
-            else:
-                hit_number += 1
-
-        if not found_valid_path:
-            optimal_path = self.ball_path.find_valid_hit(self.balls, self.holes, self.target_ball_colour)
-
-        for i, path in enumerate(optimal_path):
-            if not hasattr(path, "__len__"):
-                optimal_path[i] = (all_objects[path][0], all_objects[path][1])
+        ball_path = BallPath(self.balls, self.holes, self.target_ball_colour)      
+        optimal_path = ball_path.find_path()
 
         return optimal_path

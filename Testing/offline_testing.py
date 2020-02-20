@@ -7,6 +7,7 @@ import cv2
 import Config.eight_ball_lookup as lookup
 
 from Logic.bot import Bot
+from Logic.Path.ball_path import BallPath
 from Logic.Detection.ball_colour import BallColour
 from Logic.Detection.ball_detection import BallDetection
 
@@ -14,7 +15,7 @@ from Logic.Detection.ball_detection import BallDetection
 class OfflineTesting:
     '''Responisble for offline testing'''
 
-    item_detection = BallDetection()
+    ball_detection = BallDetection()
 
     def identify_parameters(self, identify_for_holes, identify_for_balls):
         '''Iterating through a number of images and saving the image results based on different parameter values'''
@@ -33,7 +34,7 @@ class OfflineTesting:
                     if not os.path.exists(lookup.BALL_TRAINING_PATH):
                         os.makedirs(lookup.BALL_TRAINING_PATH)
 
-                    hole_positions = self.item_detection.find_holes(image_path)
+                    hole_positions = self.ball_detection.find_holes(image_path)
                     self.find_ball_parameters(image_path, hole_positions)
 
     @staticmethod
@@ -61,7 +62,7 @@ class OfflineTesting:
     def find_ball_parameters(self, image_path, hole_positions):
         '''Iterate through a range of values and saving each result in the goal of identify the best parameters for ball detection'''
 
-        board_positions = self.item_detection.board_boundary(hole_positions)
+        board_positions = self.ball_detection.board_boundary(hole_positions)
 
         for param2 in range(13, 17, 1):
             for param1 in range(10, 310, 10):
@@ -90,7 +91,7 @@ class OfflineTesting:
         frame_count = 0
 
         cap = cv2.VideoCapture(video_path)
-        cap.set(True, 0) # Start clip from a particular frame
+        cap.set(True, frame_count) # Start clip from a particular frame
 
         if save_video:
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -100,7 +101,7 @@ class OfflineTesting:
             frame_count += 1
             ret, frame = cap.read()
 
-            if frame_count % 15 != 0:
+            if frame_count % 5 != 0:
                 continue
 
             if not bot.holes:
@@ -115,7 +116,7 @@ class OfflineTesting:
 
                 for hole in bot.holes:
                     cv2.circle(modified_frame, (hole[0], hole[1]), 2, (255, 255, 255), 3)
-                    cv2.circle(modified_frame, (hole[0], hole[1]), 20, (255, 255, 255), 3)
+                    cv2.circle(modified_frame, (hole[0], hole[1]), lookup.HOLE_RADIUS, (255, 255, 255), 3)
 
                 for ball in bot.balls:
                     rgb_colour = None
@@ -132,12 +133,25 @@ class OfflineTesting:
                     if rgb_colour is not None:
                         cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
                         cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, rgb_colour, 3)
-
+                
                 optimal_path = bot.find_optimal_path()
 
                 for i, _ in enumerate(optimal_path[:-1]):
-                    cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 5)
+                    cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 3)
+                
+                ball_path = BallPath(bot.balls, bot.holes, bot.target_ball_colour)
+                
+                target_holes = ball_path.get_target_holes()
 
+                for a_target in target_holes:
+                    cv2.circle(modified_frame, (a_target[0], a_target[1]), 2, (0, 0, 0), 3)
+                
+                shrink_border = ball_path.get_shrink_borders()
+                
+                for i, _ in enumerate(shrink_border):
+                    if i % 2 != 0:
+                        cv2.line(modified_frame, shrink_border[i], shrink_border[(i + 1) % len(shrink_border)], (150, 150, 255), 3)
+                
                 if save_video:
                     out.write(modified_frame)
 
@@ -160,4 +174,4 @@ class OfflineTesting:
             time_minutes = int(frame_count / 1800) % 60
             time_seconds = int((frame_count % 1800) / 30)
 
-            print('Current Timestamp: ' + str(time_hours) + ':' + str(time_minutes) + ':' + str(time_seconds))
+            print('Timestamp: ' + str(time_hours) + ':' + str(time_minutes) + ':' + str(time_seconds))
