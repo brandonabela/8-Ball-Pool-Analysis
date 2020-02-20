@@ -5,6 +5,7 @@ import pyautogui
 
 import Config.eight_ball_lookup as lookup
 
+
 class EightBallHandling:
     '''Responsible for handling the 8 ball game'''
 

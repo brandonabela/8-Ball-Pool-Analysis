@@ -5,8 +5,9 @@ from collections import defaultdict
 import math
 import numpy as np
 
+
 class DijkstraGraph:
-    '''Responsible for handling dijsktra graph'''
+    '''Responsible for handling dijkstra graph'''
 
     def __init__(self):
         '''Initiating a graph'''
@@ -26,7 +27,7 @@ class DijkstraGraph:
         self.weights[(to_node, from_node)] = weight
 
     def find_any_goal_path(self, start, goals):
-        '''Responsible optimal path for any goal using dijkstra algorithm'''
+        '''Responsible for finding optimal path for any goal'''
 
         paths = []
         distances = []
@@ -47,7 +48,7 @@ class DijkstraGraph:
         return []
 
     def find_a_goal_path(self, initial, end):
-        '''Responsible for calculating the optimal path for a goal using dijkstra algorithm'''
+        '''Responsible for calculating the optimal path for a goal'''
 
         shortest_paths = {initial: (None, 0)}
         current_node = initial

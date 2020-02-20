@@ -4,6 +4,7 @@ import sys
 import math
 import numpy as np
 
+
 class Vectors:
     '''Responsible for handling vector calculation'''
 
@@ -15,7 +16,7 @@ class Vectors:
     
     @staticmethod
     def move_from_two_points(point_one, point_two, distance):
-        '''Responsible for moving a given distance between two points'''
+        '''Moving a particular distance along a line starting from point one'''
 
         point_a = np.array([point_one[0], point_one[1]])
         point_b = np.array([point_two[0], point_two[1]])
@@ -27,21 +28,6 @@ class Vectors:
         target_point = point_a - (distance * unit_vector)
 
         return (int(target_point[0]), int(target_point[1]))
-
-    @staticmethod
-    def angle_between_three_points(point_one, point_two, point_three):
-        '''Calculate the angle between three points'''
-
-        point_a = np.array([point_one[0], point_one[1]])
-        point_b = np.array([point_two[0], point_two[1]])
-        point_c = np.array([point_three[0], point_three[1]])
-
-        vector_ba = point_a - point_b
-        vector_bc = point_c - point_b
-
-        cosine_angle = np.dot(vector_ba, vector_bc) / (np.linalg.norm(vector_ba) * np.linalg.norm(vector_bc))
-
-        return np.degrees(np.arccos(np.minimum(1, cosine_angle)))
 
     @staticmethod
     def line_from_two_points(point_one, point_two):

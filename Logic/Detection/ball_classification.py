@@ -1,11 +1,11 @@
-'''Item Classification Module'''
+'''Ball Classification Module'''
 
-import cv2
 import math
 
 import Config.eight_ball_lookup as lookup
 
-class ItemClassification:
+
+class BallClassification:
     '''Responsible for classifying game balls'''
 
     @staticmethod
@@ -19,10 +19,10 @@ class ItemClassification:
 
         ball_pixels = []
 
-        min_x_position = position[0] - lookup.BALL_RADIUS
-        min_y_position = position[1] - lookup.BALL_RADIUS
-        max_x_position = position[0] + lookup.BALL_RADIUS
-        max_y_position = position[1] + lookup.BALL_RADIUS
+        min_x_position = int(position[0] - lookup.BALL_RADIUS)
+        min_y_position = int(position[1] - lookup.BALL_RADIUS)
+        max_x_position = int(position[0] + lookup.BALL_RADIUS)
+        max_y_position = int(position[1] + lookup.BALL_RADIUS)
 
         ball_frame = frame[min_y_position:max_y_position, min_x_position:max_x_position].copy()
 

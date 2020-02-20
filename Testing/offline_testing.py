@@ -1,4 +1,4 @@
-'''Detection Training Module'''
+'''Offline Testing Module'''
 
 import os
 import numpy as np
@@ -7,14 +7,15 @@ import cv2
 import Config.eight_ball_lookup as lookup
 
 from Logic.bot import Bot
-from Logic.ball_path import BallPath
-from Logic.ball_colour import BallColour
-from Logic.item_detection import ItemDetection
+from Logic.Path.ball_path import BallPath
+from Logic.Detection.ball_colour import BallColour
+from Logic.Detection.ball_detection import BallDetection
 
-class DetectionTraining:
-    '''Responisble for handling detection training'''
 
-    item_detection = ItemDetection()
+class OfflineTesting:
+    '''Responisble for offline testing'''
+
+    ball_detection = BallDetection()
 
     def identify_parameters(self, identify_for_holes, identify_for_balls):
         '''Iterating through a number of images and saving the image results based on different parameter values'''
@@ -33,7 +34,7 @@ class DetectionTraining:
                     if not os.path.exists(lookup.BALL_TRAINING_PATH):
                         os.makedirs(lookup.BALL_TRAINING_PATH)
 
-                    hole_positions = self.item_detection.find_holes(image_path)
+                    hole_positions = self.ball_detection.find_holes(image_path)
                     self.find_ball_parameters(image_path, hole_positions)
 
     @staticmethod
@@ -61,7 +62,7 @@ class DetectionTraining:
     def find_ball_parameters(self, image_path, hole_positions):
         '''Iterate through a range of values and saving each result in the goal of identify the best parameters for ball detection'''
 
-        board_positions = self.item_detection.board_boundary(hole_positions)
+        board_positions = self.ball_detection.board_boundary(hole_positions)
 
         for param2 in range(13, 17, 1):
             for param1 in range(10, 310, 10):
@@ -83,7 +84,7 @@ class DetectionTraining:
 
                 cv2.imwrite(lookup.BALL_TRAINING_PATH + str(param2) + '_' + str(param1) + '.jpg', rgb_image)
 
-    def detection_on_video(self, video_path, show_video, save_video):
+    def optimal_path_video(self, video_path, show_video, save_video):
         '''Responsible for molding the features implemented on a given video which can be displayed or saved'''
 
         bot = Bot()
@@ -100,7 +101,7 @@ class DetectionTraining:
             frame_count += 1
             ret, frame = cap.read()
 
-            if frame_count % 5 is not 0:
+            if frame_count % 5 != 0:
                 continue
 
             if not bot.holes:

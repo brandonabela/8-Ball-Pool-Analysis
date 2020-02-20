@@ -2,10 +2,11 @@
 
 import cv2
 
-from Logic.ball_path import BallPath
-from Logic.ball_colour import BallColour
-from Logic.item_detection import ItemDetection
-from Logic.item_classification import ItemClassification
+from Logic.Path.ball_path import BallPath
+from Logic.Detection.ball_colour import BallColour
+from Logic.Detection.ball_detection import BallDetection
+from Logic.Detection.ball_classification import BallClassification
+
 
 class Bot:
     '''Responsible for handling the 8 ball game bot'''
@@ -15,16 +16,16 @@ class Bot:
 
     target_ball_colour = BallColour.Solid
 
-    item_detection = ItemDetection()
-    item_classification = ItemClassification()
+    ball_detection = BallDetection()
+    ball_classification = BallClassification()
 
     def find_holes(self, frame):
         '''Responsible for finding the holes if not set'''
 
         if not self.holes:
-            self.holes = self.item_detection.find_holes(frame)
+            self.holes = self.ball_detection.find_holes(frame)
 
-            board_positions = self.item_detection.board_boundary(self.holes)
+            board_positions = self.ball_detection.board_boundary(self.holes)
 
             self.holes.append((int(board_positions[0] + ((board_positions[2] - board_positions[0]) / 2)), board_positions[1]))
             self.holes.append((int(board_positions[0] + ((board_positions[2] - board_positions[0]) / 2)), board_positions[3]))
@@ -32,13 +33,13 @@ class Bot:
     def find_balls(self, frame):
         '''Responsible for finding the balls'''
 
-        board_positions = self.item_detection.board_boundary(self.holes)
+        board_positions = self.ball_detection.board_boundary(self.holes)
 
         board_frame = frame[board_positions[1]:board_positions[3], board_positions[0]:board_positions[2]]
         board_frame_edges = cv2.Canny(board_frame, 200, 300)
 
-        detected_balls = self.item_detection.find_balls(board_frame_edges)
-        
+        detected_balls = self.ball_detection.find_balls(board_frame_edges)
+
         if len(detected_balls) < 18:
             self.update_ball_structure(frame, board_positions, detected_balls)
 
@@ -52,7 +53,7 @@ class Bot:
                 new_ball_position = self.update_ball_positions(board_positions, ball)
                 ball_colour = self.classify_ball_colours(frame, new_ball_position)
 
-                self.balls.append((new_ball_position[0], new_ball_position[1], ball_colour))
+                self.balls.append((int(new_ball_position[0]), int(new_ball_position[1]), ball_colour))
 
     @staticmethod
     def update_ball_positions(board_positions, detected_ball):
@@ -65,18 +66,18 @@ class Bot:
 
         ball_colour = None
 
-        ball_pixels = self.item_classification.get_ball_pixels(frame, detected_ball)
+        ball_pixels = self.ball_classification.get_ball_pixels(frame, detected_ball)
 
-        white_count = self.item_classification.get_white_count(ball_pixels)
-        black_count = self.item_classification.get_black_count(ball_pixels)
+        white_count = self.ball_classification.get_white_count(ball_pixels)
+        black_count = self.ball_classification.get_black_count(ball_pixels)
 
-        if self.item_classification.is_solid_ball(white_count, black_count):
+        if self.ball_classification.is_solid_ball(white_count, black_count):
             ball_colour = BallColour.Solid
-        elif self.item_classification.is_striped_ball(white_count, black_count):
+        elif self.ball_classification.is_striped_ball(white_count, black_count):
             ball_colour = BallColour.Strip
-        elif self.item_classification.is_black_ball(white_count, black_count):
+        elif self.ball_classification.is_black_ball(white_count, black_count):
             ball_colour = BallColour.Black
-        elif self.item_classification.is_white_ball(white_count):
+        elif self.ball_classification.is_white_ball(white_count):
             ball_colour = BallColour.White
 
         return ball_colour

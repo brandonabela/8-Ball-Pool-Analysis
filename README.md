@@ -11,7 +11,6 @@ Features:
 - [x] Implement game item detection.
 - [x] Implement ball classification.
 - [x] Algorithm that finds an optimal path to score.
-- [ ] Find cue angle for the found optimal path.
 - [ ] Calculate ball speed for a given path on any cue.
 - [ ] Algorithm for game loop.
 
