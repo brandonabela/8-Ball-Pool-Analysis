@@ -7,6 +7,7 @@ import cv2
 import Config.eight_ball_lookup as lookup
 
 from Logic.bot import Bot
+from Logic.ball_path import BallPath
 from Logic.ball_colour import BallColour
 from Logic.item_detection import ItemDetection
 
@@ -89,7 +90,7 @@ class DetectionTraining:
         frame_count = 0
 
         cap = cv2.VideoCapture(video_path)
-        cap.set(True, 0) # Start clip from a particular frame
+        cap.set(True, frame_count) # Start clip from a particular frame
 
         if save_video:
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -98,6 +99,9 @@ class DetectionTraining:
         while cap.isOpened():
             frame_count += 1
             ret, frame = cap.read()
+
+            if frame_count % 5 is not 0:
+                continue
 
             if not bot.holes:
                 bot.find_holes(frame)
@@ -111,7 +115,7 @@ class DetectionTraining:
 
                 for hole in bot.holes:
                     cv2.circle(modified_frame, (hole[0], hole[1]), 2, (255, 255, 255), 3)
-                    cv2.circle(modified_frame, (hole[0], hole[1]), 20, (255, 255, 255), 3)
+                    cv2.circle(modified_frame, (hole[0], hole[1]), lookup.HOLE_RADIUS, (255, 255, 255), 3)
 
                 for ball in bot.balls:
                     rgb_colour = None
@@ -128,12 +132,25 @@ class DetectionTraining:
                     if rgb_colour is not None:
                         cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
                         cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, rgb_colour, 3)
-
+                
                 optimal_path = bot.find_optimal_path()
 
                 for i, _ in enumerate(optimal_path[:-1]):
-                    cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 5)
+                    cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 3)
+                
+                ball_path = BallPath(bot.balls, bot.holes, bot.target_ball_colour)
+                
+                target_holes = ball_path.get_target_holes()
 
+                for a_target in target_holes:
+                    cv2.circle(modified_frame, (a_target[0], a_target[1]), 2, (0, 0, 0), 3)
+                
+                shrink_border = ball_path.get_shrink_borders()
+                
+                for i, _ in enumerate(shrink_border):
+                    if i % 2 != 0:
+                        cv2.line(modified_frame, shrink_border[i], shrink_border[(i + 1) % len(shrink_border)], (150, 150, 255), 3)
+                
                 if save_video:
                     out.write(modified_frame)
 
@@ -156,4 +173,4 @@ class DetectionTraining:
             time_minutes = int(frame_count / 1800) % 60
             time_seconds = int((frame_count % 1800) / 30)
 
-            print('Current Timestamp: ' + str(time_hours) + ':' + str(time_minutes) + ':' + str(time_seconds))
+            print('Timestamp: ' + str(time_hours) + ':' + str(time_minutes) + ':' + str(time_seconds))
