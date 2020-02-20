@@ -7,7 +7,7 @@ import numpy as np
 
 
 class DijkstraGraph:
-    '''Responsible for handling dijsktra graph'''
+    '''Responsible for handling dijkstra graph'''
 
     def __init__(self):
         '''Initiating a graph'''
@@ -27,7 +27,7 @@ class DijkstraGraph:
         self.weights[(to_node, from_node)] = weight
 
     def find_any_goal_path(self, start, goals):
-        '''Responsible optimal path for any goal'''
+        '''Responsible for finding optimal path for any goal'''
 
         paths = []
         distances = []

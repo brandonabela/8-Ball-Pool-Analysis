@@ -1,7 +1,6 @@
 '''Ball Path Finding Handling Module'''
 
 import math
-import itertools
 import numpy as np
 
 import Config.eight_ball_lookup as lookup
@@ -47,6 +46,8 @@ class BallPath:
         return []
     
     def add_graph_edges(self):
+        '''Populating the graph with valid edges'''
+
         for target_hole_index, target_hole in enumerate(self.target_holes):
             for target_index in self.target_indices:
                 target_ball_position = self.balls[target_index]
@@ -138,7 +139,7 @@ class BallPath:
         return ball_colour_indices
     
     def get_target_holes(self):
-        '''Finding the target holes whiic are used to score a ball'''
+        '''Finding the target holes which are used to score a ball'''
 
         target_holes = []
 
