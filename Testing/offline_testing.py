@@ -85,7 +85,7 @@ class OfflineTesting:
                 cv2.imwrite(lookup.BALL_TRAINING_PATH + str(param2) + '_' + str(param1) + '.jpg', rgb_image)
 
     def optimal_path_video(self, video_path, show_video, save_video):
-        '''Responsible for molding the features implemented on a given video which can be displayed or saved'''
+        '''Responsible for modelling the implemented features on a given video which can be displayed or saved'''
 
         bot = Bot()
         frame_count = 0
@@ -101,7 +101,7 @@ class OfflineTesting:
             frame_count += 1
             ret, frame = cap.read()
 
-            if frame_count % 5 != 0:
+            if frame_count % 10 != 0:
                 continue
 
             if not bot.holes:
@@ -135,6 +135,9 @@ class OfflineTesting:
                         cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, rgb_colour, 3)
                 
                 optimal_path = bot.find_optimal_path()
+
+                if len(optimal_path):
+                    ball_speed = bot.find_cue_force(optimal_path)
 
                 for i, _ in enumerate(optimal_path[:-1]):
                     cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 3)
