@@ -19,10 +19,12 @@ class BallPath:
         self.graph = DijkstraGraph()
 
         self.ball_colour = ball_colour
+
         self.white_index = self.get_balls_index(balls, BallColour.White)
         self.target_indices = [target_index for target_index in self.get_balls_index(balls, ball_colour)]
 
         self.balls = balls
+        self.target_balls = [(balls[target_index][0], balls[target_index][1]) for target_index in self.target_indices]
 
         if self.white_index:
             self.white = balls[self.white_index]
@@ -41,7 +43,12 @@ class BallPath:
         if (self.white_index and self.target_indices):
             self.add_graph_edges()
 
-            return self.graph.find_any_goal_path(self.white, self.target_holes)
+            hole_optimal_path = self.graph.find_any_goal_path(self.white, self.target_holes)
+
+            if len(hole_optimal_path):
+                return hole_optimal_path
+            else:
+                return self.graph.find_any_goal_path(self.white, self.target_balls)
 
         return []
     
@@ -55,14 +62,18 @@ class BallPath:
 
                 if target_hit_position is not None:
                     if self.is_path_valid(self.white, target_hit_position, [self.white_index, target_index]):
-                        if self.is_possible_shot(self.white, target_ball_position, target_hole):                            
+                        if self.is_possible_shot(self.white, target_ball_position, target_hole):
                             distance = self.vectors.distance_from_two_points(self.white, target_hit_position)
                             self.graph.add_edge(self.white, target_hit_position, distance)
 
                             self.graph.add_edge(target_hit_position, target_ball_position, 0)
-
                             distance = self.vectors.distance_from_two_points(target_ball_position, target_hole)
                             self.graph.add_edge(target_ball_position, target_hole, distance)
+                        else:
+                            # Adding a constant distance to make such paths less favourtable than those that reach a hole
+
+                            distance = self.vectors.distance_from_two_points(self.white, target_ball_position)
+                            self.graph.add_edge(self.white, target_ball_position, distance + 10000)
     
     def get_target_hit_position(self, ball_index, hole_index):
         '''Responsible for calculating the target hit position'''
