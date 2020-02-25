@@ -11,7 +11,7 @@ Features:
 - [x] Implement game item detection.
 - [x] Implement ball classification.
 - [x] Algorithm that finds an optimal path to score.
-- [ ] Calculate ball speed for a given path on any cue.
+- [x] Calculate cue force for a given path.
 - [ ] Algorithm for game loop.
 
 Installing Packages using conda:

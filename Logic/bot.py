@@ -2,6 +2,7 @@
 
 import cv2
 
+from Logic.Path.vectors import Vectors
 from Logic.Path.ball_path import BallPath
 from Logic.Detection.ball_colour import BallColour
 from Logic.Detection.ball_detection import BallDetection
@@ -16,6 +17,7 @@ class Bot:
 
     target_ball_colour = BallColour.Solid
 
+    vector = Vectors()
     ball_detection = BallDetection()
     ball_classification = BallClassification()
 
@@ -88,7 +90,22 @@ class Bot:
         optimal_path = []
         all_objects = self.balls + self.holes
 
-        ball_path = BallPath(self.balls, self.holes, self.target_ball_colour)      
+        ball_path = BallPath(self.balls, self.holes, self.target_ball_colour)
         optimal_path = ball_path.find_path()
 
         return optimal_path
+
+    def find_cue_force(self, optimal_path):
+        '''Calculate the ball speed for a given path'''
+
+        path_distance = 0
+
+        for i, _ in enumerate(optimal_path[:-1]):
+            path_distance += self.vector.distance_from_two_points(optimal_path[i], optimal_path[i + 1])
+
+        sorted_holes = sorted(self.holes, key=lambda tup: (-tup[1], tup[0]))
+        sorted_holes[3::] = sorted(sorted_holes[3::], key=lambda tup: (-tup[0], tup[1]))
+
+        max_hole_distance = self.vector.distance_from_two_points(sorted_holes[0], sorted_holes[2])
+
+        return max(0, min((path_distance / max_hole_distance), 1))
