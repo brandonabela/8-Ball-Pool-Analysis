@@ -3,11 +3,16 @@
 import time
 import pyautogui
 
+from ctypes import windll
+
 import Config.eight_ball_lookup as lookup
 
 
 class EightBallHandling:
     '''Responsible for handling the 8 ball game'''
+
+    user32 = windll.user32
+    user32.SetProcessDPIAware()
 
     @staticmethod
     def is_game_loaded():
