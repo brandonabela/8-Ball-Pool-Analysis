@@ -70,7 +70,8 @@ class BallPath:
                             distance = self.vectors.distance_from_two_points(target_ball_position, target_hole)
                             self.graph.add_edge(target_ball_position, target_hole, distance)
                         else:
-                            # Adding a constant distance to make such paths less favourtable than those that reach a hole
+                            # When the shot is not possible the shortest distance between the white ball and the target ball is considered 
+                            # instead which adds a constant distance to make such paths less favourtable than those that reach a hole
 
                             distance = self.vectors.distance_from_two_points(self.white, target_ball_position)
                             self.graph.add_edge(self.white, target_ball_position, distance + 10000)
