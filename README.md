@@ -15,8 +15,8 @@ Features:
 - [ ] Algorithm for game loop.
 
 Installing Packages using conda:
-- conda install selenium
 - conda install -c anaconda pyqt
 - conda install -c conda-forge opencv
+- conda install -c conda-forge selenium
 - conda install -c conda-forge pyautogui
 - conda install -c conda-forge scikit-image
