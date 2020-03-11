@@ -19,7 +19,7 @@ class BallDetection:
         return [min_x, min_y, max_x, max_y]
 
     @staticmethod
-    def find_holes(entire_frame):
+    def find_corner_holes(entire_frame):
         '''Responsible for returning an array of hole positions'''
 
         detected_holes = []

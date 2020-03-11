@@ -112,48 +112,49 @@ class OfflineTesting:
 
                 self.print_timestamp(frame_count)
 
-                bot.find_balls(frame)
+                if bot.holes:
+                    bot.find_balls(frame)
 
-                for hole in bot.holes:
-                    cv2.circle(modified_frame, (hole[0], hole[1]), 2, (255, 255, 255), 3)
-                    cv2.circle(modified_frame, (hole[0], hole[1]), lookup.HOLE_RADIUS, (255, 255, 255), 3)
+                    for hole in bot.holes:
+                        cv2.circle(modified_frame, (hole[0], hole[1]), 2, (255, 255, 255), 3)
+                        cv2.circle(modified_frame, (hole[0], hole[1]), lookup.HOLE_RADIUS, (255, 255, 255), 3)
 
-                for ball in bot.balls:
-                    rgb_colour = None
+                    for ball in bot.balls:
+                        rgb_colour = None
 
-                    if ball[2] is BallColour.Solid:
-                        rgb_colour = (255, 0, 0)
-                    elif ball[2] is BallColour.Strip:
-                        rgb_colour = (0, 255, 0)
-                    elif ball[2] is BallColour.Black:
-                        rgb_colour = (255, 255, 0)
-                    elif ball[2] is BallColour.White:
-                        rgb_colour = (0, 255, 255)
+                        if ball[2] is BallColour.Solid:
+                            rgb_colour = (255, 0, 0)
+                        elif ball[2] is BallColour.Strip:
+                            rgb_colour = (0, 255, 0)
+                        elif ball[2] is BallColour.Black:
+                            rgb_colour = (255, 255, 0)
+                        elif ball[2] is BallColour.White:
+                            rgb_colour = (0, 255, 255)
 
-                    if rgb_colour is not None:
-                        cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
-                        cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, rgb_colour, 3)
-                
-                optimal_path = bot.find_optimal_path()
+                        if rgb_colour is not None:
+                            cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
+                            cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, rgb_colour, 3)
+                    
+                    optimal_path = bot.find_optimal_path()
 
-                if len(optimal_path):
-                    ball_speed = bot.find_cue_force(optimal_path)
+                    if len(optimal_path):
+                        ball_speed = bot.find_cue_force(optimal_path)
 
-                for i, _ in enumerate(optimal_path[:-1]):
-                    cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 3)
-                
-                ball_path = BallPath(bot.balls, bot.holes, bot.target_ball_colour)
-                
-                target_holes = ball_path.get_target_holes()
+                    for i, _ in enumerate(optimal_path[:-1]):
+                        cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 3)
+                    
+                    ball_path = BallPath(bot.balls, bot.holes, bot.target_ball_colour)
+                    
+                    target_holes = ball_path.get_target_holes()
 
-                for a_target in target_holes:
-                    cv2.circle(modified_frame, (a_target[0], a_target[1]), 2, (0, 0, 0), 3)
-                
-                shrink_border = ball_path.get_shrink_borders()
-                
-                for i, _ in enumerate(shrink_border):
-                    if i % 2 != 0:
-                        cv2.line(modified_frame, shrink_border[i], shrink_border[(i + 1) % len(shrink_border)], (150, 150, 255), 3)
+                    for a_target in target_holes:
+                        cv2.circle(modified_frame, (a_target[0], a_target[1]), 2, (0, 0, 0), 3)
+                    
+                    shrink_border = ball_path.get_shrink_borders()
+                    
+                    for i, _ in enumerate(shrink_border):
+                        if i % 2 != 0:
+                            cv2.line(modified_frame, shrink_border[i], shrink_border[(i + 1) % len(shrink_border)], (150, 150, 255), 3)
                 
                 if save_video:
                     out.write(modified_frame)

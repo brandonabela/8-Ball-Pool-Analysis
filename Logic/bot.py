@@ -25,12 +25,15 @@ class Bot:
         '''Responsible for finding the holes if not set'''
 
         if not self.holes:
-            self.holes = self.ball_detection.find_holes(frame)
+            corner_holes = self.ball_detection.find_corner_holes(frame)
 
-            board_positions = self.ball_detection.board_boundary(self.holes)
+            if len(corner_holes) == 4:
+                self.holes = corner_holes
 
-            self.holes.append((int(board_positions[0] + ((board_positions[2] - board_positions[0]) / 2)), board_positions[1]))
-            self.holes.append((int(board_positions[0] + ((board_positions[2] - board_positions[0]) / 2)), board_positions[3]))
+                board_positions = self.ball_detection.board_boundary(self.holes)
+
+                self.holes.append((int(board_positions[0] + ((board_positions[2] - board_positions[0]) / 2)), board_positions[1]))
+                self.holes.append((int(board_positions[0] + ((board_positions[2] - board_positions[0]) / 2)), board_positions[3]))
 
     def find_balls(self, frame):
         '''Responsible for finding the balls'''
