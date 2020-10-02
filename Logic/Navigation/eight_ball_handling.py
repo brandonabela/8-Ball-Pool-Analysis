@@ -15,7 +15,7 @@ class EightBallHandling:
     user32.SetProcessDPIAware()
 
     @staticmethod
-    def is_game_loaded():
+    def in_menu():
         '''Responsible for checking if game loaded successfully'''
 
         return pyautogui.locateOnScreen(lookup.MENU_BUTTON, confidence=lookup.MID_CONFIDENCE) is not None
@@ -38,3 +38,33 @@ class EightBallHandling:
                 break
 
         return pyautogui.locateOnScreen(lookup.MENU_BUTTON, confidence=lookup.MID_CONFIDENCE) is not None
+
+    @staticmethod
+    def select_game(entry_fee):
+        '''Responsible for attempting to select a game based on the entry fee'''
+
+        game_image = None
+
+        if entry_fee == 50:
+            game_image = lookup.GAME_FEE_50
+        elif entry_fee == 100:
+            game_image = lookup.GAME_FEE_100
+        elif entry_fee == 500:
+            game_image = lookup.GAME_FEE_500
+
+        oneOnOneButton = pyautogui.locateOnScreen(lookup.MENU_BUTTON, confidence=lookup.MID_CONFIDENCE)
+        pyautogui.click(oneOnOneButton)
+
+        time.sleep(2)
+
+        while True:
+            game_selection = pyautogui.locateOnScreen(game_image, confidence=lookup.LOW_CONFIDENCE)
+            previous_button = pyautogui.locateOnScreen(lookup.PREVIOUS_BUTTON, confidence=lookup.HIGH_CONFIDENCE)
+
+            if game_selection is not None:
+                pyautogui.click(game_selection)
+            elif previous_button is not None:
+                pyautogui.click(previous_button)
+                time.sleep(1)
+            else:
+                break

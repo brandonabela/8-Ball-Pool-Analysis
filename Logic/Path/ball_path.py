@@ -28,13 +28,13 @@ class BallPath:
 
         if self.white_index:
             self.white = balls[self.white_index]
-        
+
         self.sorted_holes = sorted(holes, key=lambda tup: (-tup[1], tup[0]))
         self.sorted_holes[3::] = sorted(self.sorted_holes[3::], key=lambda tup: (-tup[0], tup[1]))
 
         self.target_holes = self.get_target_holes()
         self.all_objects = self.balls + self.target_holes
-        
+
         self.shrink_borders = self.get_shrink_borders()
 
     def find_path(self):
@@ -51,7 +51,7 @@ class BallPath:
                 return self.graph.find_any_goal_path(self.white, self.target_balls)
 
         return []
-    
+
     def add_graph_edges(self):
         '''Populating the graph with valid edges'''
 
@@ -70,12 +70,12 @@ class BallPath:
                             distance = self.vectors.distance_from_two_points(target_ball_position, target_hole)
                             self.graph.add_edge(target_ball_position, target_hole, distance)
                         else:
-                            # When the shot is not possible the shortest distance between the white ball and the target ball is considered 
+                            # When the shot is not possible the shortest distance between the white ball and the target ball is considered
                             # instead which adds a constant distance to make such paths less favourtable than those that reach a hole
 
                             distance = self.vectors.distance_from_two_points(self.white, target_ball_position)
                             self.graph.add_edge(self.white, target_ball_position, distance + 10000)
-    
+
     def get_target_hit_position(self, ball_index, hole_index):
         '''Responsible for calculating the target hit position'''
 
@@ -106,7 +106,7 @@ class BallPath:
             return None
 
         return target_position
-    
+
     def is_path_valid(self, white_position, target_hit_position, exclude_indices):
         line = self.vectors.line_from_two_points(white_position, target_hit_position)
 
@@ -118,9 +118,9 @@ class BallPath:
 
             if i not in exclude_indices and is_intercepted:
                 return False
-        
+
         return True
-    
+
     @staticmethod
     def is_possible_shot(white, target_ball, target_hole):
         lower_target_ball = (target_ball[0] - lookup.BALL_DIAMETER, target_ball[1] - lookup.BALL_DIAMETER)
@@ -149,7 +149,7 @@ class BallPath:
                 return ball_colour_indices[0]
 
         return ball_colour_indices
-    
+
     def get_target_holes(self):
         '''Finding the target holes which are used to score a ball'''
 
@@ -157,7 +157,7 @@ class BallPath:
 
         start_angle = 3 * math.pi / 16
         finish_angle = 5 * math.pi / 16
-        
+
         frequency = 5
         angle_step = np.linspace(start_angle, finish_angle, frequency, True)
 
@@ -172,7 +172,7 @@ class BallPath:
             target_holes.append((self.sorted_holes[2][0] - major_cos_angle, self.sorted_holes[2][1] - major_sin_angle))
             target_holes.append((self.sorted_holes[3][0] - major_cos_angle, self.sorted_holes[3][1] + major_sin_angle))
             target_holes.append((self.sorted_holes[5][0] + major_cos_angle, self.sorted_holes[5][1] + major_sin_angle))
-            
+
             target_holes.append((self.sorted_holes[1][0] - minor_cos_angle, self.sorted_holes[1][1] - minor_sin_angle))
             target_holes.append((self.sorted_holes[4][0] + minor_cos_angle, self.sorted_holes[4][1] + minor_sin_angle))
 

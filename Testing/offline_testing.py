@@ -6,14 +6,14 @@ import cv2
 
 import Config.eight_ball_lookup as lookup
 
-from Logic.bot import Bot
+from Logic.Game.bot import Bot
 from Logic.Path.ball_path import BallPath
 from Logic.Detection.ball_colour import BallColour
 from Logic.Detection.ball_detection import BallDetection
 
 
 class OfflineTesting:
-    '''Responisble for offline testing'''
+    '''Responsible for offline testing'''
 
     ball_detection = BallDetection()
 
@@ -91,7 +91,7 @@ class OfflineTesting:
         frame_count = 0
 
         cap = cv2.VideoCapture(video_path)
-        cap.set(True, frame_count) # Start clip from a particular frame
+        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_count) # Start clip from a particular frame
 
         if save_video:
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -134,7 +134,7 @@ class OfflineTesting:
                         if rgb_colour is not None:
                             cv2.circle(modified_frame, (ball[0], ball[1]), 2, (0, 0, 0), 3)
                             cv2.circle(modified_frame, (ball[0], ball[1]), lookup.BALL_RADIUS, rgb_colour, 3)
-                    
+
                     optimal_path = bot.find_optimal_path()
 
                     if len(optimal_path):
@@ -142,20 +142,20 @@ class OfflineTesting:
 
                     for i, _ in enumerate(optimal_path[:-1]):
                         cv2.line(modified_frame, optimal_path[i], optimal_path[i + 1], (0, 0, 0), 3)
-                    
+
                     ball_path = BallPath(bot.balls, bot.holes, bot.target_ball_colour)
-                    
+
                     target_holes = ball_path.get_target_holes()
 
                     for a_target in target_holes:
                         cv2.circle(modified_frame, (a_target[0], a_target[1]), 2, (0, 0, 0), 3)
-                    
+
                     shrink_border = ball_path.get_shrink_borders()
-                    
+
                     for i, _ in enumerate(shrink_border):
                         if i % 2 != 0:
                             cv2.line(modified_frame, shrink_border[i], shrink_border[(i + 1) % len(shrink_border)], (150, 150, 255), 3)
-                
+
                 if save_video:
                     out.write(modified_frame)
 
