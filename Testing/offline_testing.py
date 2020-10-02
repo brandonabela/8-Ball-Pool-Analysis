@@ -101,8 +101,6 @@ class OfflineTesting:
             frame_count += 1
             ret, frame = cap.read()
 
-            frame = cv2.imread(video_path)
-
             if frame_count % 10 != 0:
                 continue
 
