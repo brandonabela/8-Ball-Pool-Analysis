@@ -10,11 +10,9 @@ Features:
 - [x] Implement ball classification.
 - [x] Algorithm that finds an optimal path to score.
 - [x] Calculate cue force for a given path.
+- [x] Choose Game
+- [ ] Detect player turn.
+- [ ] Detect player ball colour.
+- [ ] Check if player needs to break balls.
+- [ ] Shooting at a given ball path.
 - [ ] Algorithm for game loop.
-
-Installing Packages using conda:
-- conda install -c anaconda pyqt
-- conda install -c conda-forge opencv
-- conda install -c conda-forge selenium
-- conda install -c conda-forge pyautogui
-- conda install -c conda-forge scikit-image
