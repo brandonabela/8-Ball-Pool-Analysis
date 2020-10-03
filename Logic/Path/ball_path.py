@@ -3,8 +3,6 @@
 import math
 import numpy as np
 
-import Config.eight_ball_lookup as lookup
-
 from Logic.Path.vectors import Vectors
 from Logic.Detection.ball_colour import BallColour
 from Logic.Path.dijkstra_graph import DijkstraGraph
@@ -15,13 +13,13 @@ class BallPath:
 
     vectors = Vectors()
 
-    def __init__(self, balls, holes, ball_colour):
+    def __init__(self, balls, holes, options):
         self.graph = DijkstraGraph()
 
-        self.ball_colour = ball_colour
+        self.ball_colour = options.target_ball_colour
 
         self.white_index = self.get_balls_index(balls, BallColour.White)
-        self.target_indices = [target_index for target_index in self.get_balls_index(balls, ball_colour)]
+        self.target_indices = [target_index for target_index in self.get_balls_index(balls, self.ball_colour)]
 
         self.balls = balls
         self.target_balls = [(balls[target_index][0], balls[target_index][1]) for target_index in self.target_indices]
@@ -32,16 +30,16 @@ class BallPath:
         self.sorted_holes = sorted(holes, key=lambda tup: (-tup[1], tup[0]))
         self.sorted_holes[3::] = sorted(self.sorted_holes[3::], key=lambda tup: (-tup[0], tup[1]))
 
-        self.target_holes = self.get_target_holes()
+        self.target_holes = self.get_target_holes(options)
         self.all_objects = self.balls + self.target_holes
 
-        self.shrink_borders = self.get_shrink_borders()
+        self.shrink_borders = self.get_shrink_borders(options)
 
-    def find_path(self):
+    def find_path(self, options):
         '''Responsible for calculating an optimal path for one hit'''
 
-        if (self.white_index and self.target_indices):
-            self.add_graph_edges()
+        if self.white_index and self.target_indices:
+            self.add_graph_edges(options)
 
             hole_optimal_path = self.graph.find_any_goal_path(self.white, self.target_holes)
 
@@ -52,17 +50,17 @@ class BallPath:
 
         return []
 
-    def add_graph_edges(self):
+    def add_graph_edges(self, options):
         '''Populating the graph with valid edges'''
 
         for target_hole_index, target_hole in enumerate(self.target_holes):
             for target_index in self.target_indices:
                 target_ball_position = self.balls[target_index]
-                target_hit_position = self.get_target_hit_position(target_index, target_hole_index)
+                target_hit_position = self.get_target_hit_position(target_index, target_hole_index, options)
 
                 if target_hit_position is not None:
-                    if self.is_path_valid(self.white, target_hit_position, [self.white_index, target_index]):
-                        if self.is_possible_shot(self.white, target_ball_position, target_hole):
+                    if self.is_path_valid(self.white, target_hit_position, [self.white_index, target_index], options):
+                        if self.is_possible_shot(self.white, target_ball_position, target_hole, options):
                             distance = self.vectors.distance_from_two_points(self.white, target_hit_position)
                             self.graph.add_edge(self.white, target_hit_position, distance)
 
@@ -71,12 +69,12 @@ class BallPath:
                             self.graph.add_edge(target_ball_position, target_hole, distance)
                         else:
                             # When the shot is not possible the shortest distance between the white ball and the target ball is considered
-                            # instead which adds a constant distance to make such paths less favourtable than those that reach a hole
+                            # instead which adds a constant distance to make such paths less favourable than those that reach a hole
 
                             distance = self.vectors.distance_from_two_points(self.white, target_ball_position)
                             self.graph.add_edge(self.white, target_ball_position, distance + 10000)
 
-    def get_target_hit_position(self, ball_index, hole_index):
+    def get_target_hit_position(self, ball_index, hole_index, options):
         '''Responsible for calculating the target hit position'''
 
         ball = self.balls[ball_index]
@@ -88,7 +86,7 @@ class BallPath:
             # Line defines the path between two balls it is assumed to be blocked if
             # the distance less than two ball radii
 
-            is_intercepted = self.vectors.line_intercept_circle(line, a_ball, lookup.BALL_DIAMETER)
+            is_intercepted = self.vectors.line_intercept_circle(line, a_ball, options.ball_diameter)
 
             if i is not ball_index and is_intercepted:
                 return None
@@ -100,21 +98,21 @@ class BallPath:
             if self.vectors.segment_intercept_from_four_points(ball, hole, border_start, border_finish):
                 return None
 
-        target_position = self.vectors.move_from_two_points(ball, hole, lookup.BALL_RADIUS * 2)
+        target_position = self.vectors.move_from_two_points(ball, hole, options.ball_radius * 2)
 
         if target_position is None:
             return None
 
         return target_position
 
-    def is_path_valid(self, white_position, target_hit_position, exclude_indices):
+    def is_path_valid(self, white_position, target_hit_position, exclude_indices, options):
         line = self.vectors.line_from_two_points(white_position, target_hit_position)
 
         for i, a_ball in enumerate(self.balls):
             # Line defines the path between two balls it is assumed to be blocked if
             # the distance less than two ball radii
 
-            is_intercepted = self.vectors.line_intercept_circle(line, a_ball, int(lookup.BALL_DIAMETER))
+            is_intercepted = self.vectors.line_intercept_circle(line, a_ball, int(options.ball_diameter))
 
             if i not in exclude_indices and is_intercepted:
                 return False
@@ -122,12 +120,12 @@ class BallPath:
         return True
 
     @staticmethod
-    def is_possible_shot(white, target_ball, target_hole):
-        lower_target_ball = (target_ball[0] - lookup.BALL_DIAMETER, target_ball[1] - lookup.BALL_DIAMETER)
-        upper_target_ball = (target_ball[0] - lookup.BALL_DIAMETER, target_ball[1] - lookup.BALL_DIAMETER)
+    def is_possible_shot(white, target_ball, target_hole, options):
+        lower_target_ball = (target_ball[0] - options.ball_diameter, target_ball[1] - options.ball_diameter)
+        upper_target_ball = (target_ball[0] - options.ball_diameter, target_ball[1] - options.ball_diameter)
 
-        lower_target_hole = (target_hole[0] - lookup.BALL_DIAMETER, target_hole[1] - lookup.BALL_DIAMETER)
-        upper_target_hole = (target_hole[0] - lookup.BALL_DIAMETER, target_hole[1] - lookup.BALL_DIAMETER)
+        lower_target_hole = (target_hole[0] - options.ball_diameter, target_hole[1] - options.ball_diameter)
+        upper_target_hole = (target_hole[0] - options.ball_diameter, target_hole[1] - options.ball_diameter)
 
         not_valid_x = lower_target_ball[0] < white[0] < upper_target_hole[0] or lower_target_hole[0] < white[0] < upper_target_ball[0]
         not_valid_y = lower_target_ball[1] < white[1] < upper_target_hole[1] or lower_target_hole[1] < white[1] < upper_target_ball[1]
@@ -150,7 +148,7 @@ class BallPath:
 
         return ball_colour_indices
 
-    def get_target_holes(self):
+    def get_target_holes(self, options):
         '''Finding the target holes which are used to score a ball'''
 
         target_holes = []
@@ -162,11 +160,11 @@ class BallPath:
         angle_step = np.linspace(start_angle, finish_angle, frequency, True)
 
         for i, angle in enumerate(angle_step):
-            minor_cos_angle = int(lookup.MIDDLE_HOLE_RADIUS * math.cos(angle + (math.pi / 4)))
-            minor_sin_angle = int(lookup.MIDDLE_HOLE_RADIUS * math.sin(angle + (math.pi / 4)))
+            minor_cos_angle = int(options.middle_hole_radius * math.cos(angle + (math.pi / 4)))
+            minor_sin_angle = int(options.middle_hole_radius * math.sin(angle + (math.pi / 4)))
 
-            major_cos_angle = int(lookup.CORNER_HOLE_RADIUS * math.cos(angle))
-            major_sin_angle = int(lookup.CORNER_HOLE_RADIUS * math.sin(angle))
+            major_cos_angle = int(options.corner_hole_radius * math.cos(angle))
+            major_sin_angle = int(options.corner_hole_radius * math.sin(angle))
 
             target_holes.append((self.sorted_holes[0][0] + major_cos_angle, self.sorted_holes[0][1] - major_sin_angle))
             target_holes.append((self.sorted_holes[2][0] - major_cos_angle, self.sorted_holes[2][1] - major_sin_angle))
@@ -178,11 +176,11 @@ class BallPath:
 
         return target_holes
 
-    def get_shrink_borders(self):
+    def get_shrink_borders(self, options):
         '''Responsible for shrinking the game border'''
 
-        minor_scale = lookup.MIDDLE_BORDER_RADIUS
-        major_scale = lookup.CORNER_BORDER_RADIUS
+        minor_scale = options.middle_border_radius
+        major_scale = options.corner_border_radius
 
         middle_scale = int(minor_scale * 2)
 
