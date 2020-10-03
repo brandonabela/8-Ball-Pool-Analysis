@@ -4,7 +4,7 @@ This is an Open Source project that analyses game footage from **[Miniclip's 8 b
 
 It determines paths, which show the user a possibility of how the balls could be potted.
 
-![animated.gif](../master/assets/animated.gif)
+![animated.gif](../master/Assets/animated.gif)
 
 ## Installation
 
