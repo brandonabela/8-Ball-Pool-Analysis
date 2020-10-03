@@ -27,7 +27,7 @@ class Vectors:
         unit_vector = np_v / np_mod_v
         target_point = point_a - (distance * unit_vector)
 
-        return (int(target_point[0]), int(target_point[1]))
+        return int(target_point[0]), int(target_point[1])
 
     @staticmethod
     def line_from_two_points(point_one, point_two):
@@ -38,9 +38,9 @@ class Vectors:
         line_c = (point_two[1] * point_one[0]) - (point_one[1] * point_two[0])
 
         if line_b == 0:
-            return (line_a, 0, line_c)
+            return line_a, 0, line_c
         else:
-            return ((line_a / -line_b), -1, (line_c / -line_b))
+            return (line_a / -line_b), -1, (line_c / -line_b)
 
     def segment_intercept_from_four_points(self, point_a_one, point_a_two, point_b_one, point_b_two):
         '''Responsible for checking whether two lines intercept within a segment'''

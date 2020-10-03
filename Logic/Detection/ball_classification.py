@@ -2,33 +2,31 @@
 
 import math
 
-import Config.eight_ball_lookup as lookup
-
 
 class BallClassification:
     '''Responsible for classifying game balls'''
 
     @staticmethod
-    def get_ball_radius(x_position, y_position):
+    def get_ball_radius(x_position, y_position, options):
         '''Calculate radius from ball point'''
 
-        return math.sqrt(math.pow(lookup.BALL_RADIUS - x_position, 2) + math.pow(lookup.BALL_RADIUS - y_position, 2))
+        return math.sqrt(math.pow(options.ball_radius - x_position, 2) + math.pow(options.ball_radius - y_position, 2))
 
-    def get_ball_pixels(self, frame, position):
+    def get_ball_pixels(self, frame, position, options):
         '''Responsible for returning an array of pixels that represent the circle'''
 
         ball_pixels = []
 
-        min_x_position = int(position[0] - lookup.BALL_RADIUS)
-        min_y_position = int(position[1] - lookup.BALL_RADIUS)
-        max_x_position = int(position[0] + lookup.BALL_RADIUS)
-        max_y_position = int(position[1] + lookup.BALL_RADIUS)
+        min_x_position = int(position[0] - options.ball_radius)
+        min_y_position = int(position[1] - options.ball_radius)
+        max_x_position = int(position[0] + options.ball_radius)
+        max_y_position = int(position[1] + options.ball_radius)
 
         ball_frame = frame[min_y_position:max_y_position, min_x_position:max_x_position].copy()
 
         for x_position, _ in enumerate(ball_frame[0:-1]):
             for y_position, _ in enumerate(ball_frame[0:-1]):
-                if self.get_ball_radius(x_position, y_position) < lookup.BALL_RADIUS:
+                if self.get_ball_radius(x_position, y_position, options) < options.ball_radius:
                     ball_pixels.append(ball_frame[x_position][y_position])
 
         return ball_pixels
